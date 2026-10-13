@@ -1,0 +1,47 @@
+Shared filesystem outage leaves test writers blocked
+2026-05-26
+
+Our laboratory writers stop progressing on a shared filesystem. Their pods remain Running but writes do not complete. Several unrelated test pods using the same storage are affected. The storage service is undergoing an unplanned laboratory outage. The generated files may contain partially completed writes. I have paused new Jobs and have not force-detached mounts. Could someone help define a safe recovery boundary?
+
+
+----------Responses------------------
+
+Kavi
+
+Confirm the common storage dependency and check the storage owner's incident status.
+
+Ossa
+
+All affected claims use the same lab file service, and the owner confirms it is unavailable.
+
+Tiri
+
+Avoid treating Running pod status as progress or repeatedly restarting blocked writers.
+
+Ossa
+
+We have marked the exercise blocked and retained the last completed partition records.
+
+Kavi
+
+Ask the storage owner to restore service and report when mount-level reads and writes are safe to test.
+
+Ossa
+
+The owner has a recovery operation in progress but cannot yet confirm data-path health.
+
+Tiri
+
+Keep the writers paused and prepare validation of temporary files and completed outputs before any retry.
+
+Ossa
+
+The validation plan checks checksums and isolates incomplete temporary files instead of accepting them as output.
+
+Kavi
+
+Resume only after the owner confirms recovery and a disposable mount test passes.
+
+Ossa
+
+The exercise remains deliberately blocked with that acceptance gate, rather than declaring success before storage recovers.

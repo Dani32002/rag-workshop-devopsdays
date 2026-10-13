@@ -1,0 +1,47 @@
+Server-side apply reports competing ownership of replica count
+2026-04-17
+
+Our rehearsal manifest update fails with a field ownership conflict. The conflicting field is the Deployment replica count. An autoscaler already manages this workload. The declarative manifest still sets a fixed replica value. Other fields update successfully in dry-run comparisons. I have not forced ownership transfer. Could someone help separate the responsibilities cleanly?
+
+
+----------Responses------------------
+
+Riva
+
+Inspect managed fields for the replica field and confirm the autoscaler's intended ownership.
+
+Deni
+
+The scale controller manages replicas, while our release manager tries to apply a fixed value.
+
+Senn
+
+For this autoscaled workload, the release manifest should not continuously impose a fixed replica count.
+
+Deni
+
+The chart supports omitting replicas when autoscaling is enabled, but that option was not wired in this overlay.
+
+Riva
+
+Use the existing autoscaling-aware rendering path and review the resulting field ownership behavior.
+
+Deni
+
+The new render omits replicas and retains the autoscaler's minimum and maximum settings.
+
+Senn
+
+Validate the apply operation without forcing conflicts and check that the autoscaler still responds.
+
+Deni
+
+The apply succeeds, and bounded load causes the expected scaling change.
+
+Riva
+
+Record which manager owns scale so future releases do not reintroduce the field.
+
+Deni
+
+The ownership contract is documented and the chart test rejects fixed replicas in this autoscaled overlay.

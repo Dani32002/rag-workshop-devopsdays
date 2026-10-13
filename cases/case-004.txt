@@ -1,0 +1,47 @@
+Slow model initialization triggers repeated liveness restarts
+2026-01-08
+
+Our laboratory classifier restarts before its model finishes loading. The workload runs in the fern namespace on CPU nodes. Startup takes about ninety seconds with the larger synthetic model. The liveness probe starts much earlier than that. Memory use stays below its configured limit. I have not increased thresholds or disabled probes yet. Can we investigate a safe way to distinguish slow startup from a genuinely stuck process?
+
+
+----------Responses------------------
+
+Zavi
+
+Do events show liveness failures immediately before each restart?
+
+Elo
+
+Yes, the probe times out during loading, and the restart happens before the initialization log completes.
+
+Kiri
+
+Try the same image in an isolated test pod with a measured startup window.
+
+Elo
+
+It finishes initialization in ninety-four seconds and then answers health checks consistently.
+
+Zavi
+
+A startup probe can protect initialization while leaving liveness enforcement active afterward.
+
+Elo
+
+Would a two-minute startup budget based on repeated measurements be reasonable for this laboratory workload?
+
+Kiri
+
+Yes, test that budget with failure cases and retain the current liveness checks after startup succeeds.
+
+Elo
+
+The reviewed startup probe allows initialization, and a deliberately stalled test still exhausts the budget.
+
+Zavi
+
+Also confirm readiness does not advertise the pod before the model is usable.
+
+Elo
+
+Readiness remains false until loading completes, and the classifier now processes the synthetic sample successfully.

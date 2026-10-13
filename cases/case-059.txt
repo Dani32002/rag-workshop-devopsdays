@@ -1,0 +1,47 @@
+GitOps controller repeatedly undoes an emergency scaling edit
+2026-03-26
+
+Our rehearsal Deployment returns to two replicas after every manual scale. The GitOps controller reports healthy synchronization. The repository still declares two replicas. We wanted four replicas for a scheduled generated-load exercise. There is no autoscaler on this workload. I have stopped repeating the manual command. Could someone help use the intended source of truth?
+
+
+----------Responses------------------
+
+Keli
+
+Check whether self-healing reconciliation is enabled for this GitOps application.
+
+Navo
+
+It is enabled, and the controller restores the replica count from the repository.
+
+Viri
+
+That is expected drift correction rather than a failed scale command.
+
+Navo
+
+The exercise plan never updated the declarative replica value.
+
+Keli
+
+Submit the temporary replica change through the reviewed rehearsal configuration.
+
+Navo
+
+The change is merged and the controller reconciles four replicas.
+
+Viri
+
+Verify all four become ready and record the planned return to baseline.
+
+Navo
+
+They are ready, and the exercise change includes a reviewed cleanup step.
+
+Keli
+
+After the load test, restore two replicas in the same declarative source.
+
+Navo
+
+The controller returned to two after that change, and no reconciliation controls were disabled.

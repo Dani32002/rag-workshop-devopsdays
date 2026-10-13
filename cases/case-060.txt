@@ -1,0 +1,47 @@
+Mutable image tag leaves preview nodes on different builds
+2026-03-27
+
+Our preview responses show two different build labels. Every pod specification refers to the same demo-latest tag. The registry tag was reused for a newer generated demo build. Some pods restarted on nodes that already had the older image cached. The pull policy is IfNotPresent. I have not cleared node image caches. Could someone help make the release artifact unambiguous?
+
+
+----------Responses------------------
+
+Yani
+
+Compare each pod's resolved image digest rather than only its tag.
+
+Oren
+
+There are two distinct digests behind the matching tag text.
+
+Suri
+
+A mutable tag combined with cached images can produce mixed builds across nodes.
+
+Oren
+
+The pipeline published a unique immutable digest for the intended build.
+
+Yani
+
+Reference that digest in the reviewed preview release and roll out through the normal controller.
+
+Oren
+
+All replacement pods resolve to the intended digest.
+
+Suri
+
+Send repeated synthetic requests and check the build label in responses.
+
+Oren
+
+Every response now shows the same expected build.
+
+Yani
+
+Prevent tag reuse in the release path rather than depending on cache cleanup.
+
+Oren
+
+The pipeline now deploys immutable digests and keeps friendly tags only as artifact labels.

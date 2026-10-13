@@ -1,0 +1,47 @@
+Parallel batch workers overwrite the same synthetic output file
+2026-05-22
+
+Our parallel laboratory Job reports success but produces too few output files. It processes eight generated partitions. All workers write to the same shared output directory. Each worker currently uses the filename result.json. The storage system shows no mount errors. I have not rerun the Job over the existing output directory. Could someone help determine whether successful workers are overwriting each other's results?
+
+
+----------Responses------------------
+
+Riva
+
+Compare worker logs for partition identity and their final output paths.
+
+Deni
+
+Every worker processed a different partition but wrote the identical final path.
+
+Senn
+
+That explains why process success does not guarantee one retained result per partition.
+
+Deni
+
+The exercise can use an Indexed Job with deterministic completion indices.
+
+Riva
+
+Use the index in the reviewed output naming scheme and make writes atomic with safe retry semantics.
+
+Deni
+
+The test build writes a distinct indexed file and validates existing output before an idempotent retry.
+
+Senn
+
+Run into a new isolated output directory and include a deliberately retried partition.
+
+Deni
+
+There are eight valid files, and the retry does not corrupt or duplicate its partition result.
+
+Riva
+
+Check combined record counts against the generated input before accepting the Job outcome.
+
+Deni
+
+The counts match, and the pipeline now validates output completeness separately from pod exit status.

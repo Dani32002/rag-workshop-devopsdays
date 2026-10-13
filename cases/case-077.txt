@@ -1,0 +1,47 @@
+Custom resource finalizer waits on a retired cleanup controller
+2026-04-23
+
+One synthetic workspace resource remains stuck deleting in our lab. It has a cleanup finalizer owned by a custom controller. The controller Deployment was scaled to zero during an exercise reset. Its generated external directory still exists. The resource's deletion timestamp is already set. I have not removed the finalizer manually. Could someone help complete cleanup in the intended order?
+
+
+----------Responses------------------
+
+Kavi
+
+Check the finalizer owner and confirm the controller can still authenticate to its mock cleanup service.
+
+Ossa
+
+The controller owns the finalizer and its mock service access is still valid.
+
+Tiri
+
+Restore the controller through the lab reset workflow so it can perform its cleanup contract.
+
+Ossa
+
+The exercise owner restored one controller replica.
+
+Kavi
+
+Watch reconciliation logs for the deleting resource without exposing generated connection metadata.
+
+Ossa
+
+The controller removes the synthetic directory and verifies cleanup.
+
+Tiri
+
+Does it then remove its own finalizer and allow API deletion to complete?
+
+Ossa
+
+Yes, the custom resource disappears after the finalizer is cleared by the controller.
+
+Kavi
+
+Change the reset sequence so owned resources finish deletion before the controller stops.
+
+Ossa
+
+The sequence now waits for cleanup completion, and its repeat test no longer leaves stuck resources.

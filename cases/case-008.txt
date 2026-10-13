@@ -1,0 +1,47 @@
+Default LimitRange conflicts with a new memory request
+2026-01-14
+
+A new tutorial pod is rejected in the larch namespace. The manifest specifies a 1 GiB memory request. It does not explicitly set a memory limit. Similar small tutorial pods have worked before. The rejection says the request must not exceed the limit. I am unsure where that limit came from. Could someone help trace the namespace defaults before I edit the workload?
+
+
+----------Responses------------------
+
+Quin
+
+Inspect the namespace LimitRange and compare its default limit with your request.
+
+Sora
+
+The default memory limit is 512 MiB, which is lower than my explicit request.
+
+Havi
+
+The admission controller supplies that missing limit, making the resulting resource specification invalid.
+
+Sora
+
+The application test peaks near 800 MiB, so the small default is unsuitable.
+
+Quin
+
+Does the LimitRange also impose a maximum that would prevent an explicit larger limit?
+
+Sora
+
+Its maximum is 2 GiB, and the namespace quota has enough available memory.
+
+Havi
+
+Set a measured request and explicit limit within those bounds through your tutorial manifest review.
+
+Sora
+
+The pod is admitted with a 1 GiB request and a 1536 MiB limit.
+
+Quin
+
+Confirm it completes the tutorial and is not being terminated under peak load.
+
+Sora
+
+The peak-load run completes, and the tutorial now explains why explicit resources override small namespace defaults.

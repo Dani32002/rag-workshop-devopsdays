@@ -1,0 +1,47 @@
+Low-priority batch pods are preempted by an approved rehearsal service
+2026-05-12
+
+Several generated batch tasks disappeared during our availability rehearsal. Their replacement pods are pending. A higher-priority gateway expanded at the same time. The batch events mention preemption. The batch controller supports retrying idempotent tasks. I have stopped submitting more tasks until we understand the interruption. Could someone help confirm whether this follows the configured priority policy?
+
+
+----------Responses------------------
+
+Riva
+
+Compare the batch and gateway PriorityClasses and the node capacity at the time.
+
+Deni
+
+The batch class is lower, and the gateway needed resources on an otherwise full pool.
+
+Senn
+
+That makes preemption plausible, but check that the class assignments match the approved rehearsal design.
+
+Deni
+
+They do, and the design explicitly allows disposable batch work to yield to the gateway.
+
+Riva
+
+Do not raise batch priority just to defeat that policy.
+
+Deni
+
+The batch checkpoint records show completed items are preserved and unfinished items can retry safely.
+
+Senn
+
+Wait for approved capacity or schedule the remaining work after the gateway rehearsal finishes.
+
+Deni
+
+We chose the later window and resumed from the recorded checkpoints.
+
+Riva
+
+Verify final item counts so retries do not hide missing or duplicated work.
+
+Deni
+
+The counts match exactly, and the exercise now describes expected preemption and recovery.

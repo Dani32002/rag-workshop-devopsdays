@@ -1,0 +1,47 @@
+Canary node image fails a storage check before pool promotion
+2026-05-28
+
+Our new platform node image passed basic readiness but failed a rehearsal storage check. Only one canary node uses the image. Existing nodes continue serving the synthetic workshop workloads. A disposable pod on the canary cannot mount the approved storage class. The canary remains cordoned except for controlled tests. I have stopped wider pool promotion. Could someone help determine whether we should reject this image release?
+
+
+----------Responses------------------
+
+Lavi
+
+Compare the storage driver prerequisites on the canary with the verified node image.
+
+Nori
+
+The canary is missing a host package required by the CSI node plugin.
+
+Pexa
+
+Node Ready does not cover every platform integration, so the failed mount check is a valid promotion blocker.
+
+Nori
+
+The image build removed that package during a dependency cleanup.
+
+Lavi
+
+Keep promotion stopped and ask the node image owner to restore the required package in a new candidate.
+
+Nori
+
+The owner agrees and has withdrawn the failed candidate rather than patching all existing nodes.
+
+Pexa
+
+Retain the failed test evidence and retire the isolated canary through the normal node lifecycle workflow.
+
+Nori
+
+The canary is retired, and the established pool remains on its verified image.
+
+Lavi
+
+Require the replacement candidate to pass storage, networking, and workload checks before another promotion decision.
+
+Nori
+
+Those checks are now explicit gates, and this release is closed as rejected rather than falsely marked successful.

@@ -1,0 +1,47 @@
+Horizontal autoscaler cannot calculate CPU utilization
+2026-01-15
+
+Our staging thumbnail workers do not scale during a synthetic load test. The HorizontalPodAutoscaler targets their Deployment in the alder namespace. It shows an unknown CPU utilization value. The metrics dashboard still displays container CPU usage. The workers have CPU limits but no requests. I have not manually scaled them during this test. Could someone help find why the autoscaler cannot use the available metrics?
+
+
+----------Responses------------------
+
+Riva
+
+What does the autoscaler condition say about calculating the target metric?
+
+Deni
+
+It reports a missing CPU request for the worker container.
+
+Senn
+
+CPU utilization is relative to requests, so available usage metrics alone are not enough.
+
+Deni
+
+The rendered chart confirms that requests were omitted while limits were retained.
+
+Riva
+
+Measure normal worker CPU needs and add an explicit request through the staging change process.
+
+Deni
+
+Our benchmark supports a 200 millicore request, and the quota allows it.
+
+Senn
+
+Repeat the same load test after the replacement pods are reporting fresh metrics.
+
+Deni
+
+The autoscaler now reports utilization and increases from two to five replicas.
+
+Riva
+
+Watch its stabilization window after load stops instead of expecting immediate scale-down.
+
+Deni
+
+It returns to two replicas after the configured window, and we added a request-presence check to the chart tests.

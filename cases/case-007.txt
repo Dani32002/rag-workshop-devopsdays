@@ -1,0 +1,47 @@
+Admission quota rejects an otherwise valid Deployment
+2026-01-13
+
+My development Deployment exists but creates no pods. The namespace is willow and the workload is a synthetic report renderer. Its manifest passed client-side validation. The namespace already hosts several other experiments. We added explicit memory requests to this release. I have not deleted other teams' workloads to make room. Can someone explain why the replica count remains zero?
+
+
+----------Responses------------------
+
+Vela
+
+Check ReplicaSet events because pod creation can fail before any pod object exists.
+
+Nimo
+
+The events say the requested memory would exceed the namespace ResourceQuota.
+
+Ossa
+
+What are the current requested-memory total and the additional requirement?
+
+Nimo
+
+The total is 3 GiB against a 4 GiB quota, and this Deployment requests another 2 GiB.
+
+Vela
+
+Confirm those requests reflect measured needs rather than a copied default.
+
+Nimo
+
+A load test supports the requests, so lowering them arbitrarily would understate the requirement.
+
+Ossa
+
+Ask the namespace owner for a capacity review or schedule the experiment after their approved cleanup.
+
+Nimo
+
+The owner identified an expired experiment and removed it through the normal cleanup workflow.
+
+Vela
+
+Does the quota now allow the ReplicaSet controller to create the desired pods?
+
+Nimo
+
+It does, and all replicas are ready without changing the renderer's resource contract.

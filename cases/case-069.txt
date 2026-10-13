@@ -1,0 +1,47 @@
+Build runner cannot publish artifacts after its output path changes
+2026-04-13
+
+Our Kubernetes-based build runner finishes compilation but fails artifact collection. The Job runs in the workshop-build namespace. The compiler now writes output under /workspace/dist. The collector still watches /workspace/output. Both containers share the workspace volume. I have not copied artifacts from the pod manually. Could someone help confirm the path contract before we rerun the build?
+
+
+----------Responses------------------
+
+Cavi
+
+Check the generated build log and shared volume mounts in both containers.
+
+Tera
+
+The compiler reports successful output under dist, and both containers mount the same workspace.
+
+Voni
+
+Does the collection error indicate an empty path rather than a volume or permission failure?
+
+Tera
+
+Yes, it says no matching artifacts in output.
+
+Cavi
+
+Align the reviewed collector path with the compiler's documented output directory.
+
+Tera
+
+The corrected runner collects the generated package during a fresh test build.
+
+Voni
+
+Verify its checksum and build identifier before accepting it as the release artifact.
+
+Tera
+
+Both match the compiler's manifest.
+
+Cavi
+
+Add a pipeline assertion that the declared artifact directory exists and contains the expected package.
+
+Tera
+
+The assertion passes for this build and fails clearly for a deliberately empty output test.

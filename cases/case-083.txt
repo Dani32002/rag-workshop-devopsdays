@@ -1,0 +1,47 @@
+Clock skew on one node causes laboratory token validation failures
+2026-05-05
+
+Our mock identity client fails only when scheduled on one laboratory node. It reports that a newly issued test token is not yet valid. The same client works on other nodes. The mock issuer logs normal issuance times. The failing node was rebuilt during a time-service exercise. I have not shared tokens or adjusted application validation tolerance. Could someone help compare node clocks safely?
+
+
+----------Responses------------------
+
+Pavi
+
+Ask the node owner to compare clock offset and time synchronization status on the affected node.
+
+Reni
+
+Its clock is several minutes behind and its time synchronization service is stopped.
+
+Soro
+
+That can make valid time-bound tokens appear premature on that node.
+
+Reni
+
+The owner confirms the stopped service was left over from the controlled exercise.
+
+Pavi
+
+Have the owner isolate scheduling and restore time synchronization using the node maintenance procedure.
+
+Reni
+
+They cordoned the node and corrected its time service under that procedure.
+
+Soro
+
+Check stable offset and node health before testing a disposable identity client.
+
+Reni
+
+The offset is stable and the test client now validates the mock token.
+
+Pavi
+
+Do not broaden validation tolerance to compensate for unhealthy infrastructure.
+
+Reni
+
+We kept the original tolerance, and the owner returned the node after the health checks passed.

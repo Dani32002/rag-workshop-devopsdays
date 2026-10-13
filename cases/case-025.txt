@@ -1,0 +1,47 @@
+Ingress resource is ignored by the intended controller
+2026-02-06
+
+The new preview portal returns the ingress controller's default page. The portal Service works inside the cluster. Its Ingress resource has the expected fictional test host. The cluster has separate internal and external ingress controllers. The resource does not declare an ingress class. I have not changed DNS or exposed the Service publicly. Could someone help determine which controller is processing this route?
+
+
+----------Responses------------------
+
+Yani
+
+Check the Ingress class field, controller events, and the configured default classes.
+
+Oren
+
+There is no class field and neither controller is configured to claim unclassified resources.
+
+Suri
+
+Which controller should serve this preview route according to the platform design?
+
+Oren
+
+It should use the internal-preview class and remain reachable only from the exercise network.
+
+Yani
+
+Set that explicit class through the reviewed manifest instead of changing controller-wide defaults.
+
+Oren
+
+The controller has now reconciled the route and assigned its internal status address.
+
+Suri
+
+Test using the fictional host portal.example.test from the exercise network.
+
+Oren
+
+The request reaches the portal rather than the default page.
+
+Yani
+
+Verify the external controller did not claim the route as well.
+
+Oren
+
+Only the internal controller lists it, and the chart now requires an explicit ingress class.

@@ -1,0 +1,47 @@
+Volume topology conflicts with a forced node assignment
+2026-02-26
+
+Our development archive pod cannot mount its existing volume. The claim is already bound to zonal storage. The pod was recently pinned to a specific node using nodeName. That node is in a different zone. The volume contains only generated archive fixtures. I have not deleted the claim or copied data manually. Could someone help restore compatible scheduling without losing the fixtures?
+
+
+----------Responses------------------
+
+Ona
+
+Compare the PersistentVolume node affinity with the assigned node's topology labels.
+
+Tovin
+
+The volume is restricted to zone-a, while the forced node is in zone-b.
+
+Ruun
+
+Setting nodeName bypasses normal scheduler selection and can conflict with storage topology.
+
+Tovin
+
+The pinning was added during a diagnostic test and accidentally remained in the template.
+
+Ona
+
+Remove that pin through review and let the scheduler honor the bound volume's affinity.
+
+Tovin
+
+There is a healthy eligible node in zone-a with enough resources.
+
+Ruun
+
+Replace only the development pod through its controller and watch attach and mount events.
+
+Tovin
+
+The new pod schedules in zone-a and mounts the existing volume.
+
+Ona
+
+Verify the generated fixtures before declaring recovery.
+
+Tovin
+
+Their checksums match, and the template test now rejects unexplained nodeName pinning.

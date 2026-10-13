@@ -1,0 +1,47 @@
+Client-IP session affinity concentrates a synthetic test behind one proxy
+2026-05-18
+
+Our rehearsal Service sends most generated traffic to one replica. All four replicas are ready. The load generator reaches the Service through a single internal proxy. Session affinity is set to ClientIP. The application itself is stateless. I have not restarted replicas to rebalance the load. Could someone help determine whether the test topology explains the skew?
+
+
+----------Responses------------------
+
+Pavi
+
+Check the client address seen by the Service and the session-affinity setting.
+
+Reni
+
+The Service sees the same proxy address for every generated request.
+
+Soro
+
+ClientIP affinity can group those requests onto one backend even when many simulated users exist behind the proxy.
+
+Reni
+
+There is no application requirement for sticky sessions in this exercise.
+
+Pavi
+
+Review removing affinity for this stateless Service rather than treating the skew as a replica-health issue.
+
+Reni
+
+The owner approved sessionAffinity set to None.
+
+Soro
+
+Repeat the load test with enough independent connections, since existing connections may remain pinned.
+
+Reni
+
+With new connections, request counts are distributed across the healthy replicas.
+
+Pavi
+
+Check aggregate latency and error rate rather than requiring perfectly equal short-window counts.
+
+Reni
+
+Both remain healthy, and the test documentation now includes its proxy and connection model.

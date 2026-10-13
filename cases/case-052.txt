@@ -1,0 +1,47 @@
+SubPath mount keeps a configuration file at its original version
+2026-03-17
+
+Our sandbox rules service does not see an updated configuration file. It mounts one ConfigMap key into the application directory. The mount uses subPath to preserve other files in that directory. A normal projected directory in a diagnostic pod sees the update. The rules service still reads the older content. I have not overwritten files inside the container. Could someone help explain this mount behavior?
+
+
+----------Responses------------------
+
+Peni
+
+Confirm whether the application file is a subPath bind mount rather than the normal projected directory.
+
+Rilo
+
+It is a subPath mount, and its content remains unchanged after the ConfigMap update.
+
+Savi
+
+ConfigMap updates do not propagate into an existing subPath mount.
+
+Rilo
+
+The service supports a full configuration directory at a separate path, so subPath is not essential.
+
+Peni
+
+Test a reviewed directory mount and point the service at that path.
+
+Rilo
+
+The test pod sees projected updates at the new location.
+
+Savi
+
+Check whether the service reloads files automatically or still requires an explicit reload.
+
+Rilo
+
+It requires a supported reload signal, which our deployment workflow can send after validation.
+
+Peni
+
+Validate the new rules before reloading and retain the previous version for rollback.
+
+Rilo
+
+The validated reload succeeds, and the runbook now separates file propagation from application reload.

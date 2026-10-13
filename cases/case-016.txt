@@ -1,0 +1,47 @@
+Node becomes unready when its certificate renewal stalls
+2026-01-26
+
+One laboratory node changed to NotReady during our maintenance exercise. Workloads on the other nodes are healthy. The control plane remains reachable. The affected node was rebuilt from an older bootstrap image. Its kubelet reports authentication failures. I have not approved any certificate requests or restarted services blindly. Could someone help establish whether node identity renewal is blocked?
+
+
+----------Responses------------------
+
+Vori
+
+Ask the node owner to inspect certificate expiry and pending certificate signing requests.
+
+Evi
+
+They found an expired kubelet client certificate and a pending renewal request for this node.
+
+Saro
+
+The approver should verify the request's node identity and signer before considering approval.
+
+Evi
+
+The node name matches, but the request was blocked because the bootstrap group configuration was stale.
+
+Vori
+
+Repair that configuration through the node lifecycle procedure rather than approving every pending request.
+
+Evi
+
+The owner corrected the bootstrap configuration and approved only the verified renewal.
+
+Saro
+
+Does the kubelet authenticate again and report ready with normal heartbeats?
+
+Evi
+
+Yes, its lease updates normally and the node is Ready.
+
+Vori
+
+Keep it under maintenance observation until a small test pod confirms networking and volume access.
+
+Evi
+
+Both checks pass, and the older bootstrap image has been removed from the rebuild workflow.

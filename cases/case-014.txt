@@ -1,0 +1,47 @@
+Topology spread cannot place replicas across a missing zone
+2026-01-22
+
+The third replica of our rehearsal gateway is pending. Two replicas are healthy in separate zones. The rehearsal cluster currently has no nodes in its third configured zone. Our manifest requires strict topology spreading. The workload is stateless and serves only generated requests. I have not removed the spreading constraint. Could someone help decide whether the cluster or the test manifest is inconsistent?
+
+
+----------Responses------------------
+
+Ovi
+
+Check the spread constraint's minimum domains and the scheduler's explanation.
+
+Reni
+
+It requires three domains with DoNotSchedule, and the event reports a topology spread conflict.
+
+Savi
+
+With only two eligible zones, the required minimum domains can make the next placement unsatisfiable.
+
+Reni
+
+The rehearsal plan intended to test three-zone availability, so changing the constraint would weaken the test.
+
+Ovi
+
+Ask the platform owner whether the third rehearsal pool failed provisioning.
+
+Reni
+
+They found the pool was omitted from the reviewed infrastructure change.
+
+Savi
+
+Restore the intended third-zone pool through infrastructure review rather than weakening the workload constraint.
+
+Reni
+
+The third pool is ready, and the pending replica has scheduled there.
+
+Ovi
+
+Verify the replica distribution and run the planned zone-loss simulation under the rehearsal procedure.
+
+Reni
+
+There is one gateway per zone, and the controlled availability test passes.

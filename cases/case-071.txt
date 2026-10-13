@@ -1,0 +1,47 @@
+GitOps pruning would remove a namespace still used by an exercise
+2026-04-15
+
+Our GitOps preview shows a namespace scheduled for deletion. The namespace contains an active storage recovery exercise. A repository cleanup removed its manifest from the application. Automatic pruning is paused for review. The exercise volumes contain generated fixtures that participants still need. I have not resumed synchronization or deleted anything. Could someone help establish ownership before this cleanup proceeds?
+
+
+----------Responses------------------
+
+Vela
+
+Check which application owns the namespace and whether the removal was intended by its owner.
+
+Nimo
+
+The cleanup author intended to remove an old example file, not the active namespace.
+
+Ossa
+
+Namespace deletion can affect all namespaced exercise resources, so keep pruning paused for this review.
+
+Nimo
+
+The exercise owner confirms the namespace must remain until recovery validation finishes.
+
+Vela
+
+Restore the intended namespace declaration through the repository review before synchronization.
+
+Nimo
+
+The corrected desired state no longer includes namespace deletion.
+
+Ossa
+
+Inspect the bounded prune preview for remaining resources that belong to the active exercise.
+
+Nimo
+
+Only an unused example ConfigMap is marked for deletion, and its owner approved that cleanup.
+
+Vela
+
+Resume the reviewed synchronization and verify the namespace and claims remain intact.
+
+Nimo
+
+They remain intact, and future cleanup reviews now identify namespace ownership explicitly.

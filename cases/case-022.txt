@@ -1,0 +1,47 @@
+CronJob uses UTC instead of the rehearsal schedule zone
+2026-02-03
+
+Our rehearsal summary runs several hours earlier than expected. The CronJob is in the maple namespace. It completes successfully and produces only generated statistics. The schedule expression is intended to mean nine in the morning for our exercise zone. The manifest does not declare a time zone. I have not changed the control-plane clock. Can someone help make the schedule explicit and reproducible?
+
+
+----------Responses------------------
+
+Peni
+
+What time zone does the controller use, and does this cluster support the CronJob timeZone field?
+
+Rilo
+
+The controller uses UTC, and the installed Kubernetes version supports that field.
+
+Savi
+
+A cron expression alone does not encode the intended local zone.
+
+Rilo
+
+Our exercise uses America/Chicago, but that appears only in the runbook prose.
+
+Peni
+
+Set the supported timeZone field in the reviewed manifest rather than embedding zone syntax in the expression.
+
+Rilo
+
+The manifest now declares America/Chicago with the existing morning schedule.
+
+Savi
+
+Check the upcoming trigger calculation and daylight-saving expectations before enabling it.
+
+Rilo
+
+The calculated trigger matches the exercise calendar, including its seasonal offset.
+
+Peni
+
+Observe the next scheduled run and ensure the application still labels report dates consistently.
+
+Rilo
+
+The run starts at the intended time and the report uses the same declared zone.

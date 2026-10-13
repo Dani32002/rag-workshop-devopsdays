@@ -1,0 +1,47 @@
+Custom metrics adapter reports an unknown queue metric
+2026-04-10
+
+Our laboratory autoscaler cannot use the queue-depth metric. It targets the generated-message worker Deployment. The monitoring server has the queue series. The custom metrics adapter is running. The autoscaler reports that the requested metric was not found. I have not switched to a guessed CPU target. Could someone help trace the metric name mapping?
+
+
+----------Responses------------------
+
+Mavi
+
+Compare the autoscaler's metric name with the adapter's exposed custom metrics names.
+
+Vex
+
+The autoscaler requests queue_depth, but the adapter exposes worker_queue_messages.
+
+Piri
+
+Check the adapter rule to see whether that rename was intentional and whether namespace mapping is correct.
+
+Vex
+
+The rename is intentional, and the series maps to the worker's namespace and resource correctly.
+
+Mavi
+
+Update the reviewed autoscaler metric reference to the exposed name.
+
+Vex
+
+The metric resolves, but its current value is zero before we add test messages.
+
+Piri
+
+Inject a bounded synthetic queue and verify the value and scaling response.
+
+Vex
+
+The reported queue value rises and replicas increase within the configured limits.
+
+Mavi
+
+Watch scale-down after processing finishes to ensure the metric returns to zero.
+
+Vex
+
+It returns to zero and replicas stabilize at the minimum, with the name contract now documented.

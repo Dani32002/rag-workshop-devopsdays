@@ -1,0 +1,47 @@
+Ingress rewrite strips a prefix the application expects
+2026-02-09
+
+Our staging documentation UI loads its landing page but all nested links return 404. It is published under the /manual path. The application was configured to retain that prefix. A new ingress annotation was copied from another service. Direct requests with the prefix work inside the cluster. I have not changed the application routing again. Can someone help compare the upstream path with the path the application expects?
+
+
+----------Responses------------------
+
+Feli
+
+Check the rewrite annotation and use controller logs to inspect a synthetic nested request.
+
+Nera
+
+The request reaches the upstream as /chapters instead of /manual/chapters.
+
+Varo
+
+Does this controller's configured rewrite explicitly remove /manual?
+
+Nera
+
+Yes, the copied rule captures only the suffix and uses that as the upstream path.
+
+Feli
+
+The application and ingress currently disagree about who owns the prefix.
+
+Nera
+
+The documented application contract expects the full prefixed path.
+
+Varo
+
+Remove the unnecessary rewrite in the reviewed staging route and test both assets and nested pages.
+
+Nera
+
+Nested pages and stylesheet requests now retain the prefix and return successfully.
+
+Feli
+
+Check that unrelated routes on the same controller are unchanged.
+
+Nera
+
+Their synthetic checks pass, and this chart no longer inherits another application's rewrite annotation.

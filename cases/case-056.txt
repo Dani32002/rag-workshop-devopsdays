@@ -1,0 +1,47 @@
+Init container waits forever for a misspelled Service name
+2026-03-23
+
+Our sandbox analytics pod never reaches its main container. The init container repeatedly waits for a mock dependency. The dependency is ready in the same namespace. Other pods can reach its Service. The wait loop has no deadline. I have not skipped initialization because the main process needs that dependency. Could someone help inspect the dependency check?
+
+
+----------Responses------------------
+
+Heri
+
+Compare the hostname used by the init container with the actual Service name.
+
+Veni
+
+The script looks up mock-metics, but the Service is named mock-metrics.
+
+Laro
+
+That typo explains why the wait never observes a healthy dependency.
+
+Veni
+
+The loop also hides the DNS failure and prints only a generic waiting message.
+
+Heri
+
+Correct the name and add a bounded wait with explicit non-sensitive failure output.
+
+Veni
+
+The reviewed script now reports resolution failures and exits after its test deadline.
+
+Laro
+
+Test both the available dependency and a deliberately unavailable fictional name.
+
+Veni
+
+The normal init completes, and the negative test exits with a clear error.
+
+Heri
+
+Verify the main container starts and processes a synthetic query.
+
+Veni
+
+It does, and the template now uses one shared value for the dependency Service name.

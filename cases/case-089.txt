@@ -1,0 +1,47 @@
+WebSocket exercise disconnects at the ingress idle timeout
+2026-05-13
+
+Our preview terminal simulation disconnects after one quiet minute. It uses WebSockets through the internal ingress. Active sessions with frequent messages last longer. Direct connections inside the cluster do not disconnect at that interval. The simulator sends no heartbeat during idle periods. I have not set an unlimited timeout. Could someone help identify the relevant idle behavior?
+
+
+----------Responses------------------
+
+Yani
+
+Compare the disconnect interval with this controller's configured upstream idle timeout.
+
+Oren
+
+The timeout is sixty seconds and the disconnects occur at that boundary.
+
+Suri
+
+Does the application support bounded heartbeat messages and a maximum session lifetime?
+
+Oren
+
+It supports both, but heartbeats were disabled in the preview configuration.
+
+Yani
+
+Test heartbeats below the supported idle interval before increasing controller-wide timeouts.
+
+Oren
+
+A twenty-second heartbeat keeps quiet sessions connected.
+
+Suri
+
+Verify dead clients are detected and sessions still end at the configured maximum lifetime.
+
+Oren
+
+Both behaviors work in the simulator.
+
+Yani
+
+Keep the change scoped to the application and document the ingress's idle timeout.
+
+Oren
+
+The reviewed heartbeat setting resolves the exercise without changing shared ingress defaults.

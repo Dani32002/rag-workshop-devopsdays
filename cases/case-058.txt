@@ -1,0 +1,47 @@
+Helm upgrade keeps an obsolete value through reuse
+2026-03-25
+
+Our preview chart upgrade unexpectedly retains an old feature setting. The new values file explicitly omits that retired option. The pipeline uses Helm with reuse-values. Rendering the chart locally with only the new file gives the expected behavior. The running release still includes the old setting. I have not edited the release state manually. Could someone help compare the merged upgrade inputs?
+
+
+----------Responses------------------
+
+Peni
+
+Inspect the non-sensitive release values and the pipeline's upgrade flags.
+
+Rilo
+
+The old option remains in stored values and reuse-values carries it into the upgrade.
+
+Savi
+
+Omitting a key from the new file does not necessarily remove a retained prior value.
+
+Rilo
+
+The new chart expects a clean baseline plus the reviewed preview values file.
+
+Peni
+
+Render the intended reset-based upgrade using this Helm version's supported flags and inspect the resulting configuration.
+
+Rilo
+
+The render drops the retired option and preserves the current required settings.
+
+Savi
+
+Run the reviewed upgrade with that explicit value strategy and keep the prior release available for rollback.
+
+Rilo
+
+The preview pods now show the expected feature behavior.
+
+Peni
+
+Check every required setting rather than assuming removal of the old key proves the whole merge is correct.
+
+Rilo
+
+The configuration comparison passes, and the pipeline now documents its value merge strategy.

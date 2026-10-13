@@ -1,0 +1,47 @@
+Backup succeeds but omits a newly added application namespace
+2026-04-28
+
+Our recovery rehearsal restored only part of the workshop environment. The backup Job reported success. A new generated-data application in the linden namespace is absent from the restore. The backup uses an explicit namespace allowlist. The new application was added after that list was reviewed. I have not treated the successful Job status as proof of full coverage. Could someone help verify what was actually backed up?
+
+
+----------Responses------------------
+
+Mavi
+
+Compare the backup inventory with the declared namespace allowlist and the recovery plan.
+
+Vex
+
+Linden is missing from both the allowlist and the completed backup inventory.
+
+Piri
+
+The successful run means its configured scope completed, not that every application was included.
+
+Vex
+
+The recovery plan requires linden and its generated volume fixtures.
+
+Mavi
+
+Have the backup owner add the approved namespace and check the storage snapshot coverage for it.
+
+Vex
+
+The owner updated the scope and the next backup inventory includes its objects and volume snapshot.
+
+Piri
+
+Restore that new backup into an isolated recovery environment.
+
+Vex
+
+The application starts there and reads its generated fixtures.
+
+Mavi
+
+Compare the restored inventory and fixture checksums with the plan's acceptance criteria.
+
+Vex
+
+They match, and backup scope checks are now part of application onboarding.

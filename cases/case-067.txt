@@ -1,0 +1,47 @@
+Trace exporter silently disabled by a misspelled environment key
+2026-04-09
+
+Our preview service produces metrics but no synthetic traces. The trace collector is healthy. Another preview service sends traces to it successfully. The new service logs that tracing is disabled. Its Deployment includes what looks like an exporter setting. I have not increased sampling or restarted the collector. Could someone help compare the setting with the application's supported configuration?
+
+
+----------Responses------------------
+
+Lavi
+
+Inspect only the environment key names and the application's startup configuration summary.
+
+Nori
+
+The key is OTEL_TRACES_EXPORTERS, but the library expects the singular OTEL_TRACES_EXPORTER.
+
+Pexa
+
+That unsupported key would leave the library's configured default in effect.
+
+Nori
+
+Our application default disables exporting unless the supported key is supplied.
+
+Lavi
+
+Correct the key through review and validate the collector destination separately without sharing credentials.
+
+Nori
+
+The destination is our approved internal lab collector and the corrected pod enables exporting.
+
+Pexa
+
+Send one synthetic request with the existing sampling policy and inspect the trace pipeline.
+
+Nori
+
+The trace reaches the collector and viewer with the expected service name.
+
+Lavi
+
+Add configuration validation so unknown telemetry keys produce a clear startup warning.
+
+Nori
+
+The warning test passes, and the normal deployment now emits traces without collector changes.

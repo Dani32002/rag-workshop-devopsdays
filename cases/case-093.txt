@@ -1,0 +1,47 @@
+LoadBalancer Service cannot obtain another laboratory address
+2026-05-19
+
+Our new lab gateway Service remains pending for an external address. The pods and internal Service path are healthy. The laboratory address allocator has a small approved pool. Several older exercises still hold addresses from that pool. The event reports no addresses available. I have not assigned an arbitrary address outside the pool. Could someone help decide whether we should reclaim capacity or change the exercise plan?
+
+
+----------Responses------------------
+
+Kavi
+
+Ask the allocator owner for the pool's assignment inventory without sharing real network details.
+
+Ossa
+
+Every approved address is assigned, and all current assignments still have active owners.
+
+Tiri
+
+Then reclaiming an address would disrupt another exercise rather than solve an orphaned allocation.
+
+Ossa
+
+The new gateway is needed tomorrow, but it does not require a separate external endpoint today.
+
+Kavi
+
+Keep its internal tests running while the owner reviews a pool expansion or a scheduled shared-ingress route.
+
+Ossa
+
+The owner says pool expansion needs a separate infrastructure approval.
+
+Tiri
+
+Do not bypass that approval by selecting an unallocated-looking address.
+
+Ossa
+
+We agreed to use the existing approved internal ingress for tomorrow's exercise.
+
+Kavi
+
+Validate the reviewed route and cancel the unused pending allocation through its owner.
+
+Ossa
+
+The route passes, and the owner removed the unused request while the expansion decision remains tracked separately.

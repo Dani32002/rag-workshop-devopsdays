@@ -1,0 +1,47 @@
+Retained development volume is unavailable to a replacement claim
+2026-03-05
+
+Our recovery exercise cannot bind a replacement PVC. The old development claim was removed during the planned test. Its PersistentVolume uses the Retain reclaim policy. The backing volume still holds generated fixtures. The replacement claim has the expected capacity and access mode. I have not cleared ownership metadata or formatted the volume. Could someone explain why it is not automatically reusable?
+
+
+----------Responses------------------
+
+Oli
+
+Inspect the PersistentVolume phase and its claim reference without exposing backend identifiers.
+
+Zavi
+
+It is Released and still references the removed claim's identity.
+
+Pira
+
+Retain preserves storage for administrator recovery rather than automatically rebinding it.
+
+Zavi
+
+The exercise intends to recover the same fixtures, not provision an empty replacement.
+
+Oli
+
+Have the storage owner verify the volume and follow the documented retained-volume recovery procedure.
+
+Zavi
+
+They verified the dataset and confirmed the requested recovery target is correct.
+
+Pira
+
+Let the owner perform controlled ownership reconciliation and prebinding under that procedure.
+
+Zavi
+
+The replacement claim is now Bound to the verified retained volume.
+
+Oli
+
+Mount it in the exercise pod and validate the fixtures before resuming writes.
+
+Zavi
+
+The fixtures match, and the runbook now distinguishes retention from automatic claim reuse.

@@ -1,0 +1,47 @@
+Terminating namespace waits for an unavailable aggregated API
+2026-04-22
+
+Our disposable workshop namespace is stuck Terminating. The exercise owner approved its removal after saving generated results. Ordinary pods and claims are already gone. The namespace condition reports a discovery failure. A laboratory aggregated API was removed earlier today. I have not stripped namespace finalizers. Could someone help inspect the missing discovery dependency?
+
+
+----------Responses------------------
+
+Ovi
+
+Check the namespace discovery condition and the affected APIService's availability.
+
+Zera
+
+The APIService points to a removed lab extension Service and reports unavailable.
+
+Fenn
+
+Confirm with the extension owner whether the API is temporarily down or intentionally retired.
+
+Zera
+
+It was intentionally retired, but its cluster registration was left behind.
+
+Ovi
+
+Have that owner remove the stale registration through the supported extension cleanup procedure.
+
+Zera
+
+They verified no extension resources remain and removed the obsolete APIService.
+
+Fenn
+
+Wait for namespace discovery to succeed rather than forcing finalization.
+
+Zera
+
+The discovery failure cleared and the namespace controller completed deletion.
+
+Ovi
+
+Verify the remaining exercise namespaces and API discovery are healthy.
+
+Zera
+
+They are healthy, and extension retirement now includes registration cleanup.

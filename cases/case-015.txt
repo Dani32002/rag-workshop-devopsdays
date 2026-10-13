@@ -1,0 +1,47 @@
+Disk pressure evicts log-heavy development pods
+2026-01-23
+
+Our development simulator pods are being evicted from one node. Their container memory is stable. The node condition reports DiskPressure. The simulator writes verbose generated traces to its writable layer. Other nodes in the pool are unaffected. I have stopped the trace-heavy test to avoid further growth. Could someone help identify a safe cleanup and prevention path?
+
+
+----------Responses------------------
+
+Tavi
+
+Check eviction events and node filesystem usage without deleting runtime-managed files manually.
+
+Jori
+
+Events mention ephemeral storage, and the affected node filesystem is nearly full.
+
+Kova
+
+How much trace data does a simulator pod generate, and is rotation enabled?
+
+Jori
+
+A single test generates several gigabytes, and the debug trace file has no rotation.
+
+Tavi
+
+Have the node owner recover capacity using the supported runtime cleanup procedure.
+
+Jori
+
+They recovered capacity after stopping the test pods, and DiskPressure has cleared.
+
+Kova
+
+Add trace rotation and explicit ephemeral-storage requests and limits before repeating the test.
+
+Jori
+
+The reviewed simulator build caps trace retention and fails cleanly when its output budget is reached.
+
+Tavi
+
+Monitor node disk use during a bounded test rather than immediately restoring the full workload.
+
+Jori
+
+The bounded test stays within its budget, and no pods are evicted.

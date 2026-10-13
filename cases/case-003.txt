@@ -1,0 +1,47 @@
+Readiness probe points at a retired health endpoint
+2026-01-07
+
+Our preview dashboard starts but never becomes ready. The affected Deployment is slate-ui in the preview namespace. Container logs show the web server listening normally. The rollout has retained the previous replicas. We moved the health handler during a routing refactor. I do not want to disable health checks just to complete the rollout. Could someone help check whether the probe still matches the application?
+
+
+----------Responses------------------
+
+Talvi
+
+What HTTP status do readiness failures report, and what path is configured?
+
+Mero
+
+They report 404 for the old /ready path.
+
+Iska
+
+Can you test the documented /health/ready handler from an approved diagnostic pod against a replacement pod?
+
+Mero
+
+That handler returns 200, and the old path returns the same 404 seen in events.
+
+Talvi
+
+Check whether liveness uses a different endpoint so we do not accidentally change both semantics.
+
+Mero
+
+Liveness uses /health/live and is already working.
+
+Iska
+
+Change only the readiness path through the chart review and keep the existing readiness delay.
+
+Mero
+
+The preview rollout now has three ready replicas with no further readiness failures.
+
+Talvi
+
+Please verify a normal dashboard request through the Service as well.
+
+Mero
+
+The dashboard loads through the Service, and our release test now checks both health endpoints.

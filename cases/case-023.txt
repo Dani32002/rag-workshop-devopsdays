@@ -1,0 +1,47 @@
+Service has no endpoints after a label rename
+2026-02-04
+
+The development notes API is unreachable through its Service. Direct requests to a ready pod succeed. The Deployment and Service are both in the elm namespace. We renamed an application label during chart cleanup. The Service still exists with its original port. I have not restarted the network components. Could someone help check whether traffic is being sent to any pods?
+
+
+----------Responses------------------
+
+Keli
+
+Inspect the Service selector and its EndpointSlices.
+
+Navo
+
+The selector uses app=notes, and the EndpointSlices have no endpoints.
+
+Viri
+
+What label do the current ready pods carry?
+
+Navo
+
+They use app.kubernetes.io/name=notes-api instead.
+
+Keli
+
+The selector no longer matches the pods, so this is not evidence of a network outage.
+
+Navo
+
+The chart changed pod labels but left the Service selector untouched.
+
+Viri
+
+Update the reviewed Service selector to the stable pod label and check for unintended matches.
+
+Navo
+
+It matches only the notes API pods, and the EndpointSlices now contain their addresses.
+
+Keli
+
+Test through the Service from a normal development client.
+
+Navo
+
+The client succeeds, and the chart test now verifies selector compatibility.

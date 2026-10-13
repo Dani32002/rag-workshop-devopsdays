@@ -1,0 +1,47 @@
+Immutable ConfigMap prevents a configuration promotion
+2026-03-18
+
+Our rehearsal pipeline cannot update a configuration object. The ConfigMap is marked immutable. Its data contains only generated feature settings. The pipeline tries to reuse the same object name on every release. The Deployment is healthy on its previous configuration. I have not removed the immutable object. Could someone help adapt the promotion flow without disrupting the current replicas?
+
+
+----------Responses------------------
+
+Kavi
+
+Does the pipeline error explicitly reject modification of immutable ConfigMap data?
+
+Ossa
+
+Yes, and the immutable flag was introduced deliberately for reproducible releases.
+
+Tiri
+
+Use a new versioned ConfigMap name and update the Deployment reference instead of mutating the old object.
+
+Ossa
+
+Our chart already supports a release-specific name, but the pipeline input was fixed.
+
+Kavi
+
+Correct that reviewed input and render both the new object and the matching reference.
+
+Ossa
+
+The new ConfigMap is created and the Deployment points to its versioned name.
+
+Tiri
+
+Verify replacement pods use the new configuration while the old object remains available for rollback.
+
+Ossa
+
+All replacement pods report the expected synthetic feature set.
+
+Kavi
+
+Remove obsolete versions only under the release retention policy.
+
+Ossa
+
+We retained the rollback version and scheduled older unused objects for the normal cleanup.

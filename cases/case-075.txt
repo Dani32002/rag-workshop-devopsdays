@@ -1,0 +1,47 @@
+Persistent pod admission failures exhaust event visibility
+2026-04-21
+
+Our exercise controller keeps retrying invalid pod creation. The namespace event view is crowded with repeated failures. The controller status says reconciliation is progressing even though no pods exist. Each generated pod violates an expected resource requirement. We have paused the exercise controller's test input. I have not increased the API request rate. Could someone help fix both the invalid template and misleading status?
+
+
+----------Responses------------------
+
+Heri
+
+Read one representative admission error and compare it with the generated pod template.
+
+Veni
+
+The template lacks required memory requests under the exercise policy.
+
+Laro
+
+Check how the controller classifies this deterministic rejection in its status and retry path.
+
+Veni
+
+It reports Progressing and immediately retries without surfacing the validation failure.
+
+Heri
+
+Add the measured resources and report a clear blocked condition for deterministic admission errors.
+
+Veni
+
+The test controller now sets InvalidTemplate with a non-sensitive explanation and uses bounded retry behavior.
+
+Laro
+
+Test the invalid case first to confirm it does not produce a tight retry loop.
+
+Veni
+
+It stays visibly blocked without flooding events.
+
+Heri
+
+Then test the corrected template and ensure status advances only after actual pod readiness.
+
+Veni
+
+The corrected pod becomes ready and the controller accurately reports completion.

@@ -1,0 +1,47 @@
+Small packets work while larger cross-node transfers stall
+2026-02-23
+
+Our laboratory file-transfer test stalls between pods on different nodes. Small health requests still succeed. Transfers between pods on the same node work. We recently introduced an overlay network in the lab. The test uses generated files and no confidential content. I have not changed packet fragmentation or firewall settings globally. Could someone help check for a packet-size issue?
+
+
+----------Responses------------------
+
+Yaro
+
+Ask the network owner to compare the overlay MTU with the underlying network's supported packet size.
+
+Elo
+
+The overlay retained a 1500-byte MTU despite encapsulation overhead on a 1500-byte underlay.
+
+Kiri
+
+Use approved packet-size tests to see whether failure begins above the effective overlay limit.
+
+Elo
+
+The tests succeed below that limit and fail above it on cross-node paths.
+
+Yaro
+
+That supports an MTU mismatch, but verify the CNI's documented configuration before changing it.
+
+Elo
+
+The owner identified the supported lower overlay MTU for our encapsulation mode.
+
+Kiri
+
+Apply it through the laboratory networking rollout procedure and recreate only the test pods as required.
+
+Elo
+
+The generated file now transfers successfully between nodes.
+
+Yaro
+
+Repeat small-request and same-node tests to check for regressions.
+
+Elo
+
+Both still pass, and the infrastructure tests now validate overlay MTU against the underlay.

@@ -1,0 +1,47 @@
+CSI node plugin is absent on a tainted storage worker
+2026-03-06
+
+A sandbox pod cannot mount a bound claim on our new storage worker. The volume was provisioned successfully. The pod's event says the CSI driver is not registered on this node. Other workers mount the same storage type normally. The new worker has a dedicated storage taint. I have not retried attachment by deleting the volume. Could someone help check the node plugin coverage?
+
+
+----------Responses------------------
+
+Keli
+
+Does the CSI node DaemonSet have a pod on the new worker?
+
+Navo
+
+No, its desired count excludes that worker.
+
+Viri
+
+Compare the DaemonSet tolerations with the worker's dedicated storage taint.
+
+Navo
+
+The DaemonSet tolerates the old pool taints but not this new one.
+
+Keli
+
+Ask the storage owner whether the driver is supported on this worker pool.
+
+Navo
+
+They confirm support and say the new taint was omitted from the plugin rollout configuration.
+
+Viri
+
+Add the narrow approved toleration through the driver's managed deployment.
+
+Navo
+
+The node plugin starts and the driver registration appears on the worker.
+
+Keli
+
+Watch the pod mount retry and verify a generated file round trip.
+
+Navo
+
+The mount succeeds and the file round trip passes without altering the claim.

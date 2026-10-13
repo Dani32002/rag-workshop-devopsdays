@@ -1,0 +1,47 @@
+Metrics cardinality grows with generated request identifiers
+2026-04-06
+
+Our sandbox monitoring server consumes much more memory during load tests. The application itself remains stable. A new histogram includes a label for every generated request identifier. The test creates many unique identifiers. Older metric labels were limited to route and status. I have stopped the high-volume test for now. Could someone help decide which label should be removed without losing useful observability?
+
+
+----------Responses------------------
+
+Kavi
+
+Compare active series growth with the number of unique request identifiers.
+
+Ossa
+
+They grow together, and the histogram multiplies series for every identifier.
+
+Tiri
+
+Per-request labels create unbounded cardinality and are better represented in controlled traces or logs.
+
+Ossa
+
+Our identifiers are synthetic, but the cardinality problem still applies.
+
+Kavi
+
+Remove that metric label in the reviewed instrumentation and retain bounded route and status labels.
+
+Ossa
+
+The revised exporter produces a stable series count during the same test.
+
+Tiri
+
+Let old series age out under the monitoring retention policy rather than deleting storage casually.
+
+Ossa
+
+We kept normal retention and memory pressure is easing as the old series become inactive.
+
+Kavi
+
+Verify the latency dashboard still supports the troubleshooting questions it was designed for.
+
+Ossa
+
+Route-level latency remains visible, and per-request inspection now uses sampled synthetic traces.

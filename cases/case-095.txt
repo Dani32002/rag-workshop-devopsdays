@@ -1,0 +1,47 @@
+Deployment label migration attempts to change an immutable selector
+2026-05-21
+
+Our staging label cleanup fails when updating a Deployment. The new chart changes both pod labels and the selector. The API rejects the selector change as immutable. Existing replicas are healthy and still serve generated requests. The associated Service uses a stable label that both designs can retain. I have not deleted the Deployment to force the update. Could someone help plan a controlled migration?
+
+
+----------Responses------------------
+
+Lavi
+
+Compare the old selector with the proposed one and check whether changing it is actually necessary.
+
+Nori
+
+The new naming convention changes the selector value, but the old selector can remain as a compatibility label.
+
+Pexa
+
+Keeping that immutable selector is simpler if the new labels can be added without losing its match.
+
+Nori
+
+The chart can preserve the old selector label and add the standardized labels independently.
+
+Lavi
+
+Render that compatible version and ensure the template still matches the existing Deployment selector.
+
+Nori
+
+It matches, and server-side dry-run validation succeeds.
+
+Pexa
+
+Apply the reviewed compatible rollout while keeping the stable Service label.
+
+Nori
+
+The replacement pods become ready and the Service endpoints remain populated.
+
+Lavi
+
+Document that cosmetic label standardization does not require selector replacement.
+
+Nori
+
+The chart now preserves selector identity, and the staging service remains available throughout the rollout.

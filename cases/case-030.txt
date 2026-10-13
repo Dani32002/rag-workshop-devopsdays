@@ -1,0 +1,47 @@
+Host-networked diagnostic pod uses the node resolver
+2026-02-13
+
+Our node diagnostic pod cannot resolve cluster Service names. It uses host networking in a laboratory namespace. Normal pods on the same node resolve them successfully. The diagnostic pod can reach the laboratory network gateway. Its manifest explicitly sets the Default DNS policy. I have not edited the node resolver file. Could someone help determine which DNS policy fits this diagnostic workload?
+
+
+----------Responses------------------
+
+Kavi
+
+Inspect the pod resolver configuration and compare it with a normal cluster pod.
+
+Ossa
+
+It lists the node's resolver rather than the cluster DNS service.
+
+Tiri
+
+For an approved host-networked pod that needs cluster names, check the ClusterFirstWithHostNet policy.
+
+Ossa
+
+That matches our intended behavior and is supported by this cluster.
+
+Kavi
+
+Confirm host networking itself is required and approved before updating the pod template.
+
+Ossa
+
+The lab diagnostic procedure requires it for a specific node-level connectivity check.
+
+Tiri
+
+Use the reviewed policy change and recreate only this disposable diagnostic pod.
+
+Ossa
+
+Its resolver now points to cluster DNS and the Service lookup succeeds.
+
+Kavi
+
+Also test the laboratory gateway name to ensure the expected upstream resolution still works.
+
+Ossa
+
+Both lookup types work, and the diagnostic template now declares its DNS policy explicitly.

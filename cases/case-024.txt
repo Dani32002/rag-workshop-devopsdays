@@ -1,0 +1,47 @@
+Service target port differs from the container listener
+2026-02-05
+
+Our sandbox image viewer responds directly but fails through its Service. The pods are ready in the spruce namespace. The Service exposes port 80. The application now listens on port 8081 after a framework change. The Service configuration was not deliberately changed. I have not opened additional network policy ports yet. Could someone help trace where the connection is being forwarded?
+
+
+----------Responses------------------
+
+Teli
+
+What targetPort is configured on the Service?
+
+Mavi
+
+It is still the numeric port 8080.
+
+Poro
+
+Confirm the container listener and readiness probe both use 8081.
+
+Mavi
+
+The startup log and readiness configuration agree on 8081.
+
+Teli
+
+That mismatch sends Service traffic to a port with no listener.
+
+Mavi
+
+An approved diagnostic pod can reach 8081 directly but gets refusal on 8080.
+
+Poro
+
+Update the reviewed Service target and consider a named container port to keep the chart references aligned.
+
+Mavi
+
+We set a named web port to 8081 and reference that name from the Service.
+
+Teli
+
+Test the Service path and confirm any existing policies already allow the intended port.
+
+Mavi
+
+The policy already allows 8081, and Service requests now succeed without broader access.

@@ -1,0 +1,47 @@
+Worker image unavailable in an isolated development registry
+2026-01-06
+
+My new indexing worker never starts in our isolated development cluster. The pod is named indexer-check in the birch namespace. Its status alternates between ErrImagePull and ImagePullBackOff. Other workloads using the same registry are starting normally. The pipeline reported a successful build earlier today. I have not changed registry permissions or copied any credentials. Can someone help determine why this particular image cannot be pulled?
+
+
+----------Responses------------------
+
+Pavo
+
+What does the pull event say when you omit registry addresses and authentication details?
+
+Seli
+
+It says the manifest for the requested release tag was not found.
+
+Ruun
+
+Compare the tag in the rendered pod specification with the tag recorded by the build job.
+
+Seli
+
+The pod requests build-amber, while the build job published build-ambr.
+
+Pavo
+
+That looks like a tag mismatch rather than an authentication failure.
+
+Seli
+
+The chart constructs the tag from a separate release variable with the longer spelling.
+
+Ruun
+
+Update the reviewed release input to the actual published artifact and avoid overwriting an existing tag.
+
+Seli
+
+I deployed that change in development, and the replacement worker pulled the image successfully.
+
+Pavo
+
+Does its startup log identify the expected build and complete the test task?
+
+Seli
+
+It identifies the correct build and finishes indexing, and the pipeline now validates tag existence before deployment.

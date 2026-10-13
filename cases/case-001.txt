@@ -1,0 +1,47 @@
+API rollout blocked by an obsolete configuration key
+2026-01-05
+
+Our rehearsal API is failing after a configuration cleanup. The Deployment is named inventory-api in the cedar namespace. Two replacement pods are restarting while the older replicas remain available. The new image passed its build checks. The failure began when we renamed an environment setting. I have paused further releases without modifying the cluster. Could someone help identify which configuration reference is still wrong?
+
+
+----------Responses------------------
+
+Nera
+
+What termination reason and previous container log message do the replacement pods show?
+
+Vex
+
+The reason is Error, and the previous log says the required INVENTORY_MODE setting is missing.
+
+Olin
+
+Compare the Deployment environment references with the current ConfigMap keys without posting any values.
+
+Vex
+
+The ConfigMap has INVENTORY_PROFILE, but the application still expects INVENTORY_MODE.
+
+Nera
+
+Did the image change the expected variable name, or did only the configuration change?
+
+Vex
+
+Only the configuration changed, and the release notes confirm the application contract is unchanged.
+
+Olin
+
+Restore the expected key in the reviewed configuration change and test it in this rehearsal namespace.
+
+Vex
+
+The reviewed patch is deployed, and both replacement pods have stayed ready through several probe cycles.
+
+Nera
+
+Verify all replicas use the intended revision before resuming the release pipeline.
+
+Vex
+
+All four replicas now use that revision, and we added a configuration contract check to the pipeline.

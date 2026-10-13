@@ -1,0 +1,47 @@
+Snapshot restore claim uses the wrong data source kind
+2026-03-04
+
+My laboratory restore claim remains pending. It should restore a generated dataset from a ready volume snapshot. The source snapshot exists in the same namespace. The CSI snapshot controller is healthy. The claim was rendered from a new recovery chart. I have not deleted the snapshot or modified its contents. Could someone help inspect the restore reference?
+
+
+----------Responses------------------
+
+Peni
+
+Check the claim dataSource kind and API group against the snapshot resource.
+
+Rilo
+
+The chart set kind to PersistentVolumeClaim even though the name belongs to a VolumeSnapshot.
+
+Savi
+
+A snapshot restore needs the VolumeSnapshot kind and its snapshot API group.
+
+Rilo
+
+The controller event says it cannot find the PVC named by the mistaken reference.
+
+Peni
+
+Because this unbound test claim has no data, create a corrected restore claim under a new reviewed name.
+
+Rilo
+
+The corrected claim references the ready snapshot without changing the original source.
+
+Savi
+
+Wait for binding and mount it in an isolated validation pod.
+
+Rilo
+
+It binds successfully and the validation pod reads the restored dataset.
+
+Peni
+
+Compare the generated dataset checksums before adopting the corrected recovery template.
+
+Rilo
+
+They match, and the template test now checks snapshot reference kinds and groups.

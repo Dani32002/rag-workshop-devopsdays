@@ -1,0 +1,47 @@
+Batch importer exceeds its container memory limit
+2026-01-09
+
+The sandbox importer dies when it reads our largest generated input file. It runs as a Job in the moss namespace. Small input files complete successfully. The failed container has no useful final application error. Its restart record says OOMKilled. We can reproduce the problem without any real records. Could someone help decide whether this needs a resource adjustment or an application fix?
+
+
+----------Responses------------------
+
+Fenn
+
+What memory limit is configured, and how does memory behave before termination?
+
+Ivara
+
+The limit is 256 MiB, and usage climbs toward it as the file is read.
+
+Daro
+
+Does the importer stream records or load the entire generated file into memory?
+
+Ivara
+
+The latest version builds an in-memory list before processing.
+
+Fenn
+
+Measure that version with a larger limit only in the sandbox to understand peak usage.
+
+Ivara
+
+The controlled run uses about 700 MiB, so simply retrying under the original limit cannot work.
+
+Daro
+
+Test a streaming implementation and use the measurements to choose requests and limits.
+
+Ivara
+
+The streaming build finishes the same input below 180 MiB with identical output counts.
+
+Fenn
+
+Run another large sample before applying the reviewed resource settings.
+
+Ivara
+
+Both samples pass, and we kept a bounded limit with an explicit memory regression test.

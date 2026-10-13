@@ -1,0 +1,47 @@
+Single-architecture image fails on a mixed laboratory pool
+2026-05-07
+
+Our new demo container fails only on the ARM laboratory nodes. Its pod exits immediately with an exec format error. The same digest works on AMD64 nodes. We recently added ARM nodes to the shared test pool. The image build still uses a single architecture. I have not constrained the entire cluster to AMD64. Could someone help select a safe immediate workaround and a durable artifact fix?
+
+
+----------Responses------------------
+
+Yeli
+
+Inspect the image's declared architecture and compare it with the failing node label.
+
+Faro
+
+The image is AMD64-only and the failing nodes are labeled ARM64.
+
+Orvi
+
+That mismatch is consistent with the execution error.
+
+Faro
+
+The demo has no immediate ARM support requirement, but the next exercise will test both architectures.
+
+Yeli
+
+Use a reviewed AMD64 node selector for this release while the build owner creates a multi-architecture artifact.
+
+Faro
+
+The current demo now schedules only on compatible nodes and starts successfully.
+
+Orvi
+
+Test the future manifest-list image on each architecture before removing the temporary selector.
+
+Faro
+
+Both architecture-specific images pass the same synthetic functional checks.
+
+Yeli
+
+Promote the verified multi-architecture artifact through the release process.
+
+Faro
+
+It runs on both pools, and the temporary selector has been removed from the reviewed next release.

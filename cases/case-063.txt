@@ -1,0 +1,47 @@
+Alert evaluates a counter as though it were a current error rate
+2026-04-03
+
+Our rehearsal error alert remains firing after the failing test stopped. The service is now responding successfully. Its metric is a cumulative error counter. The alert expression compares that counter directly with a fixed threshold. We reset no application state during recovery. I have not silenced the entire alert group. Could someone help make the alert represent recent behavior instead of historical totals?
+
+
+----------Responses------------------
+
+Pavi
+
+Check the expression and compare raw counter values with their recent increase.
+
+Reni
+
+The total remains above the threshold, but it has not increased for twenty minutes.
+
+Soro
+
+A cumulative total will not fall when errors stop, so the current expression cannot represent recovery.
+
+Reni
+
+The intended alert is a sustained recent error ratio, not a lifetime error count.
+
+Pavi
+
+Build the ratio from rates of error and request counters with an appropriate evaluation window.
+
+Reni
+
+The test expression now measures the recent ratio and accounts for periods with no requests.
+
+Soro
+
+Validate it against healthy traffic, injected errors, and a quiet interval before replacing the rule.
+
+Reni
+
+It fires during sustained injected errors and clears after healthy traffic resumes.
+
+Pavi
+
+Have the monitoring owner review the threshold and hold duration.
+
+Reni
+
+The owner approved the measured rule, and the old lifetime-counter comparison has been replaced.

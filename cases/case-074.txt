@@ -1,0 +1,47 @@
+Upgrade dry run rejects a removed Ingress API version
+2026-04-20
+
+Our laboratory cluster upgrade rehearsal rejects an old ingress manifest. The current cluster still has the working route. The target version no longer serves the API version used by the manifest. We are validating against a disposable upgraded cluster. The backend Service is otherwise unchanged. I have not started the real maintenance upgrade. Could someone help migrate the route schema and verify equivalent behavior?
+
+
+----------Responses------------------
+
+Peni
+
+Check the target cluster's served Ingress API and required backend fields.
+
+Rilo
+
+It serves networking.k8s.io/v1 and requires the current service backend structure plus pathType.
+
+Savi
+
+Translate the old backend fields and select a path type matching the intended route semantics.
+
+Rilo
+
+Our /docs route is intended as a prefix, and the service name and port are unchanged.
+
+Peni
+
+Render the migrated manifest and run server-side dry-run validation on the disposable target.
+
+Rilo
+
+The dry run passes with the v1 structure and Prefix path type.
+
+Savi
+
+Apply it only in the rehearsal cluster and test the root, nested paths, and a nonmatching path.
+
+Rilo
+
+Those tests match the old route's intended behavior.
+
+Peni
+
+Update every release source for this route before approving the maintenance upgrade.
+
+Rilo
+
+The sources are migrated, and the actual upgrade remains gated on the remaining rehearsal checks.

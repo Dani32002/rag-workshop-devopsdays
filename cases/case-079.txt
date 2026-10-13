@@ -1,0 +1,47 @@
+API conversion webhook fails after its serving certificate expires
+2026-04-27
+
+Our lab workspace resources cannot be read through their newer API version. Reads through the stored version still work. The CRD uses a conversion webhook. Its pod is running but conversion requests report a certificate expiry error. The webhook uses a lab-only certificate. I have not edited the CA bundle blindly. Could someone help restore trust through its managed certificate workflow?
+
+
+----------Responses------------------
+
+Yani
+
+Have the extension owner compare the serving certificate expiry with the managed renewal status.
+
+Oren
+
+The certificate expired because the renewal Job referenced a removed lab issuer.
+
+Suri
+
+Correct the issuer reference through review and let the managed workflow generate the replacement.
+
+Oren
+
+The owner corrected it and the replacement certificate is ready.
+
+Yani
+
+Verify the CRD trust bundle and serving certificate chain through the extension's supported reconciliation.
+
+Oren
+
+The reconciliation updated both consistently without sharing private material.
+
+Suri
+
+Read a synthetic resource through both served versions and compare the converted fields.
+
+Oren
+
+Both reads succeed and the expected fields match.
+
+Yani
+
+Keep the extension under observation and add an expiry alert for the managed certificate.
+
+Oren
+
+The alert is in place, and conversion remains healthy during the lab checks.

@@ -1,0 +1,47 @@
+CPU throttling makes a staging parser appear idle
+2026-01-12
+
+Our staging parser is taking much longer to process synthetic messages. The queue grows even though the pods are healthy. Dashboard averages show low CPU compared with the node capacity. We recently lowered the container CPU limit. There are no application exceptions or restarts. I have not changed replica counts to conceal the slowdown. Could someone help interpret whether throttling is involved?
+
+
+----------Responses------------------
+
+Luma
+
+What is the container CPU limit, and do throttled-period metrics increase during parsing?
+
+Tovin
+
+The limit is 100 millicores, and throttled periods rise sharply during each parse burst.
+
+Brin
+
+Node-wide idle capacity does not remove a container quota, so compare processing latency with its throttling.
+
+Tovin
+
+The latency spikes align with the bursts rather than with node utilization.
+
+Luma
+
+Benchmark one staging replica with a reviewed higher CPU limit while keeping the input rate fixed.
+
+Tovin
+
+At 500 millicores, throughput returns to baseline and throttled time falls substantially.
+
+Brin
+
+Check the namespace quota and scheduler capacity before expanding that setting to every replica.
+
+Tovin
+
+Both have room, and the platform owner approved the measured request and limit.
+
+Luma
+
+After rollout, compare queue drain rate and error rate with the earlier baseline.
+
+Tovin
+
+The queue is draining normally with unchanged error rates, and the dashboard now includes throttling alongside usage.

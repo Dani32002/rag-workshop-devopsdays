@@ -1,0 +1,47 @@
+Sidecar readiness races with a short-lived test client
+2026-02-19
+
+Our meshed connectivity Job sometimes fails on its first request. Retrying the same Job usually succeeds. The main process starts almost immediately in the dune namespace. Its sidecar takes several seconds to become ready. The destination remains healthy throughout. I have not added an arbitrary long sleep. Could someone help make startup ordering reliable?
+
+
+----------Responses------------------
+
+Ovi
+
+Compare the failed request time with the sidecar's readiness transition.
+
+Zera
+
+Every failure occurs before the proxy finishes its configuration handshake.
+
+Fenn
+
+Does the installed mesh provide a supported way to hold application startup until the proxy is ready?
+
+Zera
+
+It provides a documented per-workload startup-hold setting.
+
+Ovi
+
+Test that supported setting on this Job rather than changing global proxy behavior.
+
+Zera
+
+The application now begins after the sidecar is ready.
+
+Fenn
+
+Also give the client bounded retries for transient destination failures after startup.
+
+Zera
+
+The client already has bounded retries, and repeated startup tests now pass.
+
+Ovi
+
+Verify the Job still terminates according to the mesh's documented completion procedure.
+
+Zera
+
+It terminates cleanly, and the runner template records both startup and completion requirements.

@@ -1,0 +1,47 @@
+DaemonSet omits a newly introduced operating system label
+2026-01-28
+
+Our telemetry DaemonSet is absent from two new laboratory nodes. It runs normally on the older Linux nodes. The new nodes are also Linux and report Ready. No failed telemetry pods appear on them. The manifest was written before the pool migration. I have not manually placed pods on the nodes. Could someone help find why the controller does not consider them eligible?
+
+
+----------Responses------------------
+
+Seli
+
+Compare the DaemonSet node selector with labels on both node generations.
+
+Tavo
+
+It selects the deprecated beta operating-system label, which the new nodes do not carry.
+
+Miri
+
+Do the new nodes have the stable kubernetes.io/os label set to linux?
+
+Tavo
+
+Yes, both node generations have that stable label.
+
+Seli
+
+Update the selector to the stable label after checking that all intended nodes match it.
+
+Tavo
+
+The reviewed selector matches exactly the Linux nodes assigned to this telemetry service.
+
+Miri
+
+Deploy the change and watch desired versus ready DaemonSet counts.
+
+Tavo
+
+The desired count increases by two and all telemetry pods become ready.
+
+Seli
+
+Confirm the backend receives metrics from the new nodes rather than only checking pod readiness.
+
+Tavo
+
+Their synthetic node metrics are arriving, and we added label compatibility to the pool migration checklist.

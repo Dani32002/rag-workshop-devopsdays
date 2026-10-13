@@ -1,0 +1,47 @@
+StatefulSet update waits behind an unhealthy highest ordinal
+2026-01-29
+
+Our test archive StatefulSet has not advanced its rolling update. It has three replicas in the acorn namespace. The highest ordinal is unready after the new image started. The two lower ordinals still run the old image. The update strategy uses ordered rolling replacement. I have not deleted the remaining replicas to accelerate it. Can someone help explain the ordering and inspect the blocked member?
+
+
+----------Responses------------------
+
+Davi
+
+Check the highest ordinal's readiness failure and the StatefulSet update status.
+
+Hera
+
+The highest ordinal has the new revision but fails readiness because its local index upgrade has not finished.
+
+Qori
+
+Ordered updates wait for that member to become ready before replacing lower ordinals.
+
+Hera
+
+The upgrade log is progressing, but our readiness timeout alert assumed it would take less than a minute.
+
+Davi
+
+Compare the elapsed time with the documented upgrade window before deciding whether rollback is needed.
+
+Hera
+
+The test dataset needs about six minutes, which is within the documented ten-minute window.
+
+Qori
+
+Keep monitoring progress and avoid deleting members while the index upgrade is active.
+
+Hera
+
+The highest ordinal became ready after six minutes, and the next ordinal is now updating.
+
+Davi
+
+Verify every member's revision and a read operation after the ordered rollout finishes.
+
+Hera
+
+All three members have the new revision and pass reads, and the rehearsal alert now reflects the upgrade window.

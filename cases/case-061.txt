@@ -1,0 +1,47 @@
+ServiceMonitor label does not match the monitoring selector
+2026-04-01
+
+Our rehearsal exporter is missing from the metrics target list. Its metrics endpoint responds inside the cluster. A ServiceMonitor exists in the observatory namespace. The monitoring server is healthy and scrapes other exporters. We recently standardized chart labels. I have not added a second scrape configuration. Could someone help determine whether discovery is selecting this monitor?
+
+
+----------Responses------------------
+
+Feli
+
+Compare the monitoring server's ServiceMonitor selector with labels on your ServiceMonitor.
+
+Nera
+
+The server requires monitoring-set=rehearsal, but our monitor has monitoring-group=rehearsal.
+
+Varo
+
+Check whether the namespace is selected as well so we do not miss another discovery constraint.
+
+Nera
+
+The observatory namespace is selected correctly.
+
+Feli
+
+Use the platform's approved monitor label through the chart values rather than adding duplicate discovery.
+
+Nera
+
+The target now appears in the server's discovered list.
+
+Varo
+
+Does its scrape status succeed and produce the expected metric family?
+
+Nera
+
+It is up and the generated event counter is present.
+
+Feli
+
+Increment the counter with one test event to verify the full path.
+
+Nera
+
+The counter increases as expected, and the chart lint now checks the monitor label contract.

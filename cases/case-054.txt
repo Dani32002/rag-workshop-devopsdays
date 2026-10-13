@@ -1,0 +1,47 @@
+EmptyDir size limit stops a temporary sorting task
+2026-03-19
+
+Our development sorter fails midway through a large generated dataset. It writes temporary partitions to an emptyDir volume. The volume has a 1 GiB size limit. Small datasets complete normally. The error says there is no space left on the temporary path. I have not redirected files into the container root filesystem. Could someone help estimate a safe temporary storage budget?
+
+
+----------Responses------------------
+
+Vela
+
+Measure the temporary partition footprint and check node ephemeral-storage availability.
+
+Nimo
+
+The generated input needs about 1.6 GiB of temporary space, and the node has adequate capacity.
+
+Ossa
+
+Does the pod declare ephemeral-storage requests and limits as well as the emptyDir size limit?
+
+Nimo
+
+It has no ephemeral-storage request and a copied emptyDir limit.
+
+Vela
+
+Set a measured temporary budget and compatible pod storage resources through the reviewed development manifest.
+
+Nimo
+
+The owner approved a 2 GiB workspace with headroom for logs in the pod budget.
+
+Ossa
+
+Repeat the same dataset and monitor both workspace growth and cleanup.
+
+Nimo
+
+The sort completes, and temporary files are removed when the task finishes.
+
+Vela
+
+Test an oversized input to ensure the failure is explicit rather than consuming unbounded node space.
+
+Nimo
+
+The oversized test reports its budget error cleanly, and normal inputs stay within the measured limit.

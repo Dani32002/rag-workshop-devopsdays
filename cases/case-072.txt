@@ -1,0 +1,47 @@
+Kustomize overlay patches the wrong container name
+2026-04-16
+
+Our staging overlay no longer changes the API resource limits. The base manifest recently renamed the main container. The overlay still renders without the values we expected. The workload has a sidecar as well as the API container. We have not applied the suspicious output. I want to avoid accidentally changing the sidecar instead. Could someone help inspect how the patch identifies its target?
+
+
+----------Responses------------------
+
+Yeli
+
+Compare the strategic merge patch container name with the base container names.
+
+Faro
+
+The patch names api-old, while the base now names the main container api-main.
+
+Orvi
+
+Depending on the patch shape, that can add an unintended container entry rather than edit the desired one.
+
+Faro
+
+The rendered output has an extra api-old entry without an image, so admission would reject it.
+
+Yeli
+
+Correct the patch name and validate the rendered container count before deployment.
+
+Faro
+
+The render now has exactly the main container and the sidecar.
+
+Orvi
+
+Check that only the main container's resource fields changed and run server-side dry-run validation.
+
+Faro
+
+The sidecar is unchanged and the dry run succeeds.
+
+Yeli
+
+Apply the reviewed overlay and verify the new main-container limits.
+
+Faro
+
+The staging pods use the intended limits, and render tests now assert container names and count.

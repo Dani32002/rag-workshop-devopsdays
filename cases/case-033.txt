@@ -1,0 +1,47 @@
+Mutual TLS rejects a newly unmeshed caller
+2026-02-18
+
+Our rehearsal pricing API rejects requests from a new test runner. The API is healthy and works for existing meshed callers. The runner was deployed in a namespace without sidecar injection. The destination requires strict mutual TLS. TCP connectivity checks are otherwise normal. I have not disabled the destination's security policy. Could someone help align the runner with the intended mesh behavior?
+
+
+----------Responses------------------
+
+Leri
+
+Check whether the runner has a sidecar and whether the destination logs show a TLS handshake failure.
+
+Pavo
+
+The runner has no sidecar, and the destination reports a plaintext connection under strict mutual TLS.
+
+Nera
+
+Is this runner supposed to participate in the rehearsal mesh?
+
+Pavo
+
+Yes, its approved design calls for the same workload identity as other test callers.
+
+Leri
+
+Enable injection through the reviewed runner namespace or workload configuration and create a new runner pod.
+
+Pavo
+
+The new pod has its sidecar and receives the expected test identity.
+
+Nera
+
+Verify authorization policy permits that identity without adding wildcard principals.
+
+Pavo
+
+The existing policy already permits it, and requests now succeed.
+
+Leri
+
+Confirm an unmeshed test request remains rejected.
+
+Pavo
+
+It remains rejected, so we restored the intended caller setup without weakening mutual TLS.

@@ -1,0 +1,47 @@
+Gateway drops long requests during a rolling update
+2026-05-01
+
+Our rehearsal gateway drops some generated export requests during rollouts. Normal short requests remain reliable. The export handler can take forty seconds to finish. The pod termination grace period is thirty seconds. The application begins graceful shutdown when it receives termination. I have paused further rollouts for this rehearsal. Could someone help align draining behavior with the request lifetime?
+
+
+----------Responses------------------
+
+Feli
+
+Compare the dropped request duration with termination events and the process shutdown log.
+
+Nera
+
+Requests are interrupted when the grace period ends before the export handler finishes.
+
+Varo
+
+Does shutdown stop accepting new work while allowing in-flight requests to complete?
+
+Nera
+
+It does, but the ingress also needs a short propagation window before every backend stops receiving new requests.
+
+Feli
+
+Measure both drain propagation and maximum request duration in the rehearsal environment.
+
+Nera
+
+The measurements support a seventy-five-second total termination budget for this exercise.
+
+Varo
+
+Review that budget together with the application's bounded drain and any preStop time, since they share the grace period.
+
+Nera
+
+The reviewed configuration includes both phases within the measured budget.
+
+Feli
+
+Repeat a rollout with long requests and confirm stalled requests still have a bounded shutdown.
+
+Nera
+
+Long requests complete, and a stalled-request test still terminates within the configured budget.

@@ -1,0 +1,47 @@
+Log collector excludes namespaces without an enrollment label
+2026-04-07
+
+Our new exercise namespace has no logs in the shared laboratory viewer. The application emits generated messages to standard output. Reading logs directly from its pod works. The collector agents are healthy on every node. Other exercise namespaces appear normally. I have not copied pod logs into the viewer by hand. Could someone help check whether collection enrollment is missing?
+
+
+----------Responses------------------
+
+Yeli
+
+Inspect the collector's namespace selection rule and the new namespace labels.
+
+Faro
+
+The collector requires logs-enabled=true, and our namespace has no enrollment label.
+
+Orvi
+
+Was collection approved for this namespace and its synthetic log content?
+
+Faro
+
+Yes, the exercise owner approved collection and retention in the shared lab viewer.
+
+Yeli
+
+Add the reviewed enrollment label through the namespace provisioning configuration.
+
+Faro
+
+The collector starts shipping new messages after the label is reconciled.
+
+Orvi
+
+Send a unique synthetic marker and check that it appears once with the expected namespace.
+
+Faro
+
+The marker appears once and has the correct namespace metadata.
+
+Yeli
+
+Confirm whether the collector's documented policy includes backfill so expectations are clear.
+
+Faro
+
+It collects only available retained container logs, and we documented that old missing logs are not guaranteed to backfill.

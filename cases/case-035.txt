@@ -1,0 +1,47 @@
+Pod networking fails only on one node after a CNI rollout
+2026-02-20
+
+New sandbox pods on one node cannot reach any Services. Pods on the other nodes work normally. The affected pods have addresses but no usable network path. The issue started during a CNI agent rollout. The node remains Ready. I have paused new sandbox tests and have not restarted every networking agent. Could someone help isolate the node-local failure?
+
+
+----------Responses------------------
+
+Riva
+
+Compare CNI agent readiness and recent events on the affected node with a healthy node.
+
+Talvi
+
+The affected agent is unready and reports that its configuration file cannot be parsed.
+
+Senn
+
+Inspect the configuration revision and validation error without sharing unrelated node files.
+
+Talvi
+
+Its node-specific override contains an unsupported option left from an older agent version.
+
+Riva
+
+Have the network owner cordon the affected node while reviewing a compatible override.
+
+Talvi
+
+They cordoned it and corrected only that stale option through the CNI configuration workflow.
+
+Senn
+
+Use the owner's supported agent recovery procedure and test a disposable pod there.
+
+Talvi
+
+The agent is ready again, and the disposable pod reaches DNS and a test Service.
+
+Riva
+
+Uncordon only after the network owner confirms the node's dataplane checks pass.
+
+Talvi
+
+They confirmed the checks and restored scheduling, and new sandbox pods now connect normally.

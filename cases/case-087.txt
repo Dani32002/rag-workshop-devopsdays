@@ -1,0 +1,47 @@
+Vertical autoscaler recommendations do not change pod requests
+2026-05-11
+
+Our development VerticalPodAutoscaler recommends larger requests but nothing changes. The application remains healthy. The autoscaler object is in recommendation-only mode. Its status includes a sensible memory estimate from our synthetic load. We expected a visible pod replacement after the estimate changed. I have not manually recreated pods. Could someone clarify whether the current mode is intentionally non-disruptive?
+
+
+----------Responses------------------
+
+Lavi
+
+Check the update policy and whether the installed VPA version supports the behavior you expected.
+
+Nori
+
+The update mode is Off, which our installation describes as recommendation-only.
+
+Pexa
+
+That mode observes usage without changing requests or evicting existing pods.
+
+Nori
+
+The original exercise was meant to teach sizing without automatic disruption.
+
+Lavi
+
+Then the lack of replacement is expected rather than a failed controller.
+
+Nori
+
+We still want to use the recommendation for the next reviewed release.
+
+Pexa
+
+Compare it with measured peaks and namespace capacity before changing the declarative request.
+
+Nori
+
+The recommendation fits our measurements and quota, so the owner approved a manual chart update.
+
+Lavi
+
+Roll out that update normally and leave recommendation-only mode in place for the exercise.
+
+Nori
+
+The next release uses the measured request, and the lesson now explains that recommendations alone do not mutate pods.

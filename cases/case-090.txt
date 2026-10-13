@@ -1,0 +1,47 @@
+Readiness removal does not migrate an existing streaming connection
+2026-05-14
+
+Our streaming demo keeps talking to a pod after that pod becomes unready. The Service's ready endpoint list has changed. New clients connect to other replicas. The original client holds a long-lived TCP connection. We expected readiness to move that connection automatically. I have not killed the connection from the network layer. Could someone help distinguish endpoint selection from connection draining?
+
+
+----------Responses------------------
+
+Feli
+
+Check whether the original connection was established before the readiness change.
+
+Nera
+
+It was established several minutes earlier and remains open.
+
+Varo
+
+Readiness controls selection for new traffic but does not transparently migrate an existing TCP stream.
+
+Nera
+
+The demo currently stops advertising readiness without notifying connected clients.
+
+Feli
+
+Use the application's supported drain protocol to tell clients to reconnect with a bounded delay.
+
+Nera
+
+The protocol sends a final drain message and closes the stream after acknowledged completion.
+
+Varo
+
+Test reconnect behavior and message sequence continuity in the rehearsal environment.
+
+Nera
+
+The client reconnects to a ready replica and resumes at the next sequence.
+
+Feli
+
+Keep the readiness test, but add an explicit existing-connection acceptance test.
+
+Nera
+
+Both tests pass, and the runbook no longer claims that readiness alone moves open connections.

@@ -1,0 +1,47 @@
+Required node affinity names a retired pool label
+2026-01-21
+
+Our integration test agents are pending after a node-pool replacement. The namespace is hazel. The new nodes have enough resources and are healthy. Agent pods from before the replacement finished normally. The pod template includes required node affinity. I suspect a label changed but have not relaxed scheduling rules. Can someone help compare the intended placement with the new pool?
+
+
+----------Responses------------------
+
+Yeli
+
+Compare the required affinity key and value with labels on the replacement nodes.
+
+Faro
+
+The template requires pool-generation=old, while the replacement nodes have pool-generation=current.
+
+Orvi
+
+Is that generation label supposed to express workload eligibility or just node provenance?
+
+Faro
+
+It was copied from a maintenance example and was never intended as an eligibility requirement.
+
+Yeli
+
+Use the stable workload-pool label approved by the platform team instead.
+
+Faro
+
+The new and old build nodes both use workload-pool=integration as that stable label.
+
+Orvi
+
+Update affinity in the reviewed template while retaining the integration-only placement constraint.
+
+Faro
+
+The pending agents are replaced and now schedule on the current pool.
+
+Yeli
+
+Run a representative integration task to verify the replacement nodes supply the needed tools.
+
+Faro
+
+The task passes, and the template no longer depends on a temporary generation label.

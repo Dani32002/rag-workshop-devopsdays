@@ -1,0 +1,47 @@
+Non-root processor cannot write to its newly mounted volume
+2026-03-03
+
+Our sandbox processor fails when creating its first output file. It now runs as a non-root user in the olive namespace. The same image can write to an emptyDir test directory. Its persistent volume mounts successfully but reports permission denied on writes. The volume is new and contains no real records. I have not made the directory world-writable. Could someone help align volume ownership with the workload identity?
+
+
+----------Responses------------------
+
+Luma
+
+Check the process user and group along with the mounted directory's ownership and mode.
+
+Tera
+
+The process uses group 2200, but the directory belongs to root with group-only writes disabled.
+
+Brin
+
+Does this CSI driver support the workload's fsGroup ownership behavior?
+
+Tera
+
+Its documentation confirms support, and our pod securityContext currently omits fsGroup.
+
+Luma
+
+Add the approved group through the reviewed securityContext rather than changing global permissions.
+
+Tera
+
+The platform policy allows group 2200 for this sandbox workload.
+
+Brin
+
+Recreate the test pod and inspect ownership after the driver handles the mount.
+
+Tera
+
+The directory has the intended group access and the processor writes its generated output.
+
+Luma
+
+Verify the process still runs non-root and unrelated directories are not writable.
+
+Tera
+
+Both checks pass, and the deployment now declares its volume access group explicitly.

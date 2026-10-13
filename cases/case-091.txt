@@ -1,0 +1,47 @@
+Finished Job disappears before its test report is collected
+2026-05-15
+
+Our laboratory test dashboard cannot find a recently successful Job. The test finished normally and had no pod errors. The Job template sets a short TTL after completion. The dashboard polls less frequently than that TTL. It reads results from pod logs rather than a retained report. I have not disabled cleanup globally. Could someone help preserve the result without accumulating old Jobs indefinitely?
+
+
+----------Responses------------------
+
+Talvi
+
+Compare the completion time, TTL expiry, and dashboard polling interval.
+
+Mero
+
+The TTL is thirty seconds, while the dashboard polls every two minutes.
+
+Iska
+
+The cleanup controller can legitimately remove the Job before that dashboard sees it.
+
+Mero
+
+The application can publish its generated report to the lab's managed artifact store before exiting.
+
+Talvi
+
+Make report publication explicit and fail the test if the required report cannot be stored.
+
+Mero
+
+The updated test publishes a report with its synthetic run identifier before reporting success.
+
+Iska
+
+Update the dashboard to read that retained result and keep a bounded Job TTL for investigation.
+
+Mero
+
+The dashboard finds the result even after the Job is cleaned up.
+
+Talvi
+
+Test an artifact-store outage so missing evidence cannot appear as a successful test.
+
+Mero
+
+That negative test fails visibly, and normal result retention now follows the artifact policy.

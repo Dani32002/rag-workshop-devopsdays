@@ -1,0 +1,47 @@
+Namespace selector uses a pod label in a NetworkPolicy
+2026-02-17
+
+Our integration API cannot reach its mock database in another namespace. Both workloads are ready. The database ingress policy should allow the integration namespace. The API connection times out instead of being refused. DNS resolution is working. I have not added a broad allow-all rule. Could someone help verify the cross-namespace selector?
+
+
+----------Responses------------------
+
+Sira
+
+Compare the policy namespaceSelector with labels on the integration namespace object.
+
+Mero
+
+The selector expects role=integration, but that label is only on the API pods.
+
+Havi
+
+A namespaceSelector matches namespace labels rather than pod labels.
+
+Mero
+
+The namespace has the approved environment=integration label.
+
+Sira
+
+Use that verified namespace label together with a podSelector for the intended API pods.
+
+Mero
+
+I put both selectors in the same peer entry so they are combined rather than separate alternatives.
+
+Havi
+
+Have the network owner review the port and combined scope before applying it.
+
+Mero
+
+The reviewed rule allows only the API pods to reach the mock database port.
+
+Sira
+
+Test the allowed path and an unrelated pod from the same namespace.
+
+Mero
+
+The API connects, while the unrelated pod remains blocked.

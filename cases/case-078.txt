@@ -1,0 +1,47 @@
+Custom resource created before its definition becomes established
+2026-04-24
+
+Our fresh laboratory installation intermittently fails to create a demo resource. The same pipeline installs its CustomResourceDefinition first. Both operations run in one fast bootstrap stage. The error says the resource kind is not recognized. Repeating the resource creation a little later succeeds. I have not added an unbounded retry loop. Could someone help identify the correct readiness condition for installation ordering?
+
+
+----------Responses------------------
+
+Lavi
+
+Check whether the CRD has the Established condition when the first creation attempt runs.
+
+Nori
+
+It is not established yet during the failing attempt.
+
+Pexa
+
+CRD creation acknowledgement does not mean the new API is immediately ready for discovery and use.
+
+Nori
+
+The pipeline currently proceeds as soon as the apply command exits.
+
+Lavi
+
+Wait with a bounded timeout for establishment and confirm API discovery before creating demo resources.
+
+Nori
+
+The bootstrap now waits for both checks and reports a clear failure if they time out.
+
+Pexa
+
+Run several clean disposable installations to verify ordering rather than only retrying the existing cluster.
+
+Nori
+
+Five clean installations succeed without the unknown-kind error.
+
+Lavi
+
+Test an intentionally invalid definition so the wait cannot look like success.
+
+Nori
+
+The negative test fails explicitly, and the installer preserves the error output for troubleshooting.

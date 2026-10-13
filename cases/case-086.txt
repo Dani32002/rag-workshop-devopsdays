@@ -1,0 +1,47 @@
+Hugepage workload requests a page size the nodes do not provide
+2026-05-08
+
+Our laboratory packet simulator remains pending despite free memory. It requests hugepages in addition to ordinary memory. The test nodes reserve 2 MiB pages. The manifest requests a different hugepage size. We copied its resource section from an unrelated performance example. I have not changed kernel boot settings on the nodes. Could someone help check whether the request matches available resources?
+
+
+----------Responses------------------
+
+Heri
+
+Compare the hugepage resource keys in the pod and node allocatable resources.
+
+Veni
+
+The pod requests hugepages-1Gi, while the nodes advertise only hugepages-2Mi.
+
+Laro
+
+Those are distinct non-substitutable resources, so ordinary free memory cannot satisfy the request.
+
+Veni
+
+The simulator supports 2 MiB pages according to its laboratory configuration guide.
+
+Heri
+
+Review the resource key and HugePages volume configuration together for the supported page size.
+
+Veni
+
+The updated manifest uses the supported resource and mount consistently.
+
+Laro
+
+Check the requested amount against allocatable capacity before starting the test.
+
+Veni
+
+There is enough reserved capacity and the test pod schedules.
+
+Heri
+
+Verify the application actually uses the intended hugepage mount.
+
+Veni
+
+Its diagnostic output confirms that use, and no kernel settings needed to change.

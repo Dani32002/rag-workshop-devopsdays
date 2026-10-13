@@ -1,0 +1,47 @@
+Restricted pod policy rejects root defaults in a new chart
+2026-03-12
+
+Our training namespace rejects a new utility pod at admission. It enforces the restricted Pod Security Standard. The chart uses an image that can run as non-root. Its pod security settings are mostly absent. The admission message mentions privilege escalation and user requirements. I have not disabled namespace enforcement. Could someone help render a compliant pod rather than adding an exception?
+
+
+----------Responses------------------
+
+Leri
+
+Inspect the full admission reasons and the image's supported runtime user.
+
+Pavo
+
+The image supports user 2300, but the manifest does not set non-root execution or disable privilege escalation.
+
+Nera
+
+Check capability dropping and seccomp requirements as well, since fixing only one field may still fail admission.
+
+Pavo
+
+Those are absent too, and the utility does not need extra capabilities.
+
+Leri
+
+Add the required restricted settings through chart review and keep the filesystem permissions compatible with user 2300.
+
+Pavo
+
+The rendered pod now uses non-root execution, RuntimeDefault seccomp, no privilege escalation, and dropped capabilities.
+
+Nera
+
+Run server-side dry-run validation before creating the training pod.
+
+Pavo
+
+Admission accepts the dry run and the real pod starts successfully.
+
+Leri
+
+Exercise the utility's normal operation to verify it does not secretly depend on root privileges.
+
+Pavo
+
+The generated-file task passes, and the namespace policy remains enforced.

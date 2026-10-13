@@ -1,0 +1,47 @@
+Metrics scrape uses a Service port number instead of its name
+2026-04-02
+
+Our test exporter appears in monitoring discovery but is not scraped. Its Service exposes a named metrics port. The exporter responds on that port from a diagnostic pod. The ServiceMonitor endpoint configuration was recently simplified. The target page reports no matching endpoint port. I have not changed the exporter listener. Could someone help inspect the monitoring port reference?
+
+
+----------Responses------------------
+
+Talvi
+
+What is the Service port name, and what does the ServiceMonitor endpoint port field contain?
+
+Mero
+
+The Service port is named telemetry, while the monitor field contains the string 9090.
+
+Iska
+
+That endpoint field expects the Service port name rather than its numeric value.
+
+Mero
+
+The rendered Service confirms telemetry maps to the exporter container's correct listener.
+
+Talvi
+
+Change the monitor reference to telemetry through the reviewed chart configuration.
+
+Mero
+
+The target now has a resolved endpoint and its first scrape succeeds.
+
+Iska
+
+Check the configured path and interval to ensure the successful connection returns the intended metrics.
+
+Mero
+
+The /metrics path and thirty-second interval are correct.
+
+Talvi
+
+Observe several scrapes before closing the discovery issue.
+
+Mero
+
+Five consecutive scrapes succeed, and the dashboard shows the expected test counters.

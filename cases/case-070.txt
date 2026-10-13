@@ -1,0 +1,47 @@
+Admission rejects an unsigned image from a new build path
+2026-04-14
+
+Our rehearsal release is blocked by image admission policy. The generated demo image passed its unit tests. The cluster requires a verified signature from the workshop build identity. A new pipeline path pushed the image but skipped signing. The prior release is still serving synthetic traffic. I have not requested a policy bypass. Could someone help restore the artifact verification step?
+
+
+----------Responses------------------
+
+Zavi
+
+Confirm the admission message identifies a missing signature rather than an untrusted signing identity.
+
+Elo
+
+It reports no signature for the exact image digest.
+
+Kiri
+
+Compare the new pipeline path with the existing approved signing stage.
+
+Elo
+
+The new path exits after publication and never calls that stage.
+
+Zavi
+
+Use the approved signing workflow for the tested digest without copying signing material into the repository.
+
+Elo
+
+The build owner signed that digest through the managed workflow.
+
+Kiri
+
+Retry server-side admission validation and verify the policy recognizes the expected identity.
+
+Elo
+
+Validation succeeds and identifies the approved workshop signer.
+
+Zavi
+
+Deploy that exact digest and make signing a required stage on every release path.
+
+Elo
+
+The rehearsal rollout succeeds, and the unsigned-artifact negative test remains blocked.

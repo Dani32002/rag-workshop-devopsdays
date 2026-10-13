@@ -1,0 +1,47 @@
+CronJob misses runs because its previous task never finishes
+2026-02-02
+
+Our development cleanup CronJob has not started a new run for an hour. It normally runs every ten minutes in the ivy namespace. The controller is healthy and the schedule has not changed. One earlier Job is still active. The CronJob uses the Forbid concurrency policy. I have not removed that protection or terminated the active pod. Could someone help find what is keeping the earlier task open?
+
+
+----------Responses------------------
+
+Zera
+
+Check the active Job's logs and whether its main process is still performing cleanup.
+
+Lovi
+
+The cleanup finished, but the wrapper script is waiting on a background metrics helper.
+
+Hano
+
+Does that helper have a termination path when the main cleanup command exits?
+
+Lovi
+
+No, it runs indefinitely and the wrapper waits for every child process.
+
+Zera
+
+That explains why Forbid skips subsequent starts even though the useful work finished.
+
+Lovi
+
+We can reproduce this with an empty directory in the development environment.
+
+Hano
+
+Fix the wrapper to stop its helper cleanly and test exit status propagation before changing scheduled runs.
+
+Lovi
+
+The corrected wrapper exits successfully and preserves failure status when cleanup fails.
+
+Zera
+
+Have the workload owner end the stuck development run after confirming no cleanup operation remains active.
+
+Lovi
+
+They ended it safely, and the next scheduled run completed without weakening concurrency protection.

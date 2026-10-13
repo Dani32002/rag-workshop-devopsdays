@@ -1,0 +1,47 @@
+External name lookups saturate DNS through search expansion
+2026-02-12
+
+Our synthetic crawler causes unusually high DNS traffic in the sandbox. It repeatedly looks up an external test name served by our lab resolver. Most lookups succeed but become slow under load. Internal Service lookups remain required by the application. The pod resolver uses the cluster's default search list. I have not scaled DNS replicas without understanding the traffic pattern. Could someone help explain the extra queries?
+
+
+----------Responses------------------
+
+Pavi
+
+Compare the requested name with ndots and observe lookup sequences in the lab resolver metrics.
+
+Reni
+
+The name is feed.example.test, and ndots is five.
+
+Soro
+
+That can cause several search-suffix attempts before trying the absolute name.
+
+Reni
+
+The metrics show failed expanded names before every successful absolute lookup.
+
+Pavi
+
+Can the application use the fully qualified name with a trailing dot for this external dependency?
+
+Reni
+
+Our HTTP client supports it, and the dependency is only a controlled laboratory endpoint.
+
+Soro
+
+Test that change in one sandbox replica while keeping internal Service resolution unchanged.
+
+Reni
+
+The extra queries disappear and lookup latency drops under the same synthetic load.
+
+Pavi
+
+Validate connection behavior and hostname handling before rolling it out to the remaining crawler replicas.
+
+Reni
+
+Both pass, and the reviewed crawler change reduces DNS traffic without changing cluster-wide resolver settings.

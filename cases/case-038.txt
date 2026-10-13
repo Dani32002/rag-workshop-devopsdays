@@ -1,0 +1,47 @@
+PVC waits for a consumer rather than provisioning immediately
+2026-02-25
+
+My disposable development claim remains Pending. It requests 10 GiB in the pebble namespace. Its StorageClass uses delayed binding. No pod currently references the claim because I wanted storage ready first. The provisioner is healthy. I have not changed the binding mode. Could someone explain whether this pending state is actually an error?
+
+
+----------Responses------------------
+
+Vela
+
+Does the claim event say it is waiting for the first consumer?
+
+Sora
+
+Yes, that is the only event and there is no provisioning failure.
+
+Havi
+
+WaitForFirstConsumer lets scheduling choose a compatible topology before provisioning storage.
+
+Sora
+
+So the claim can legitimately stay pending until an eligible pod uses it.
+
+Vela
+
+Create your reviewed disposable test pod with the claim reference and normal scheduling rules.
+
+Sora
+
+The scheduler selects a node and provisioning begins in that node's zone.
+
+Havi
+
+Watch both claim binding and mount events rather than expecting the claim to bind first.
+
+Sora
+
+The claim is Bound and the pod has mounted it successfully.
+
+Vela
+
+Write and read a generated test file, then follow the lab's retention policy.
+
+Sora
+
+The file round trip passes, and I updated the exercise instructions to explain delayed binding.

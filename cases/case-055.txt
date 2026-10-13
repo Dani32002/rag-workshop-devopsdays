@@ -1,0 +1,47 @@
+Read-only root filesystem exposes an undocumented cache path
+2026-03-20
+
+Our hardened preview pod fails at startup. We enabled a read-only root filesystem in its reviewed security settings. The application tries to create a cache directory under /var/cache/demo. Its main data volume mounts normally. The cache contains only disposable generated entries. I have not reverted the hardening setting. Could someone help provide a narrowly writable location?
+
+
+----------Responses------------------
+
+Sira
+
+Check the startup error and identify every path the application needs to write.
+
+Mero
+
+The only startup write is the disposable cache at /var/cache/demo.
+
+Havi
+
+Can the application use a mounted emptyDir at that exact path with a bounded size?
+
+Mero
+
+Yes, it supports that location and does not require persistence.
+
+Sira
+
+Add a reviewed bounded cache mount with ownership compatible with the non-root process.
+
+Mero
+
+The new pod starts and writes only within the mounted cache directory.
+
+Havi
+
+Run a request that fills and evicts cache entries to verify the size budget is adequate.
+
+Mero
+
+The synthetic request test stays below the budget and eviction works.
+
+Sira
+
+Confirm the rest of the root filesystem is still read-only.
+
+Mero
+
+It remains read-only, and the application documentation now lists its writable paths.

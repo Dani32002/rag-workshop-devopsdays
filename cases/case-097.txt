@@ -1,0 +1,47 @@
+Application caches a negative DNS lookup after dependency creation
+2026-05-25
+
+Our sandbox client still says its new dependency does not exist. The dependency Service was created after the client started. Cluster DNS now resolves the name from a diagnostic pod. The client's runtime has an extended negative lookup cache. Restarting a disposable copy of the client fixes the symptom. I have not restarted cluster DNS. Could someone help verify whether the application cache is the remaining issue?
+
+
+----------Responses------------------
+
+Yeli
+
+Compare a fresh application lookup with the long-running process under the same pod resolver configuration.
+
+Faro
+
+The fresh process resolves it, while the long-running process returns its earlier negative result.
+
+Orvi
+
+That isolates the stale result above the cluster resolver.
+
+Faro
+
+The runtime configuration caches negative answers for thirty minutes in this exercise.
+
+Yeli
+
+Review a bounded shorter negative-cache duration suited to dependency discovery rather than disabling all caching.
+
+Faro
+
+The owner approved a short duration and an explicit retry deadline.
+
+Orvi
+
+Test starting the client before the Service exists and creating the Service during that deadline.
+
+Faro
+
+The client discovers it after the bounded cache expires and connects successfully.
+
+Yeli
+
+Also test a genuinely absent dependency so retries end with a clear error.
+
+Faro
+
+That test fails visibly at the deadline, and cluster DNS remained unchanged.

@@ -1,0 +1,47 @@
+Disruption budget blocks a planned rehearsal node drain
+2026-01-27
+
+Our planned rehearsal node drain cannot evict a queue coordinator. The workload has two replicas in the juniper namespace. One replica was already unready before maintenance began. The PodDisruptionBudget requires one available replica. We stopped the drain after the first eviction refusal. I do not want to force deletion and interrupt coordination. Could someone help determine what needs recovery before maintenance resumes?
+
+
+----------Responses------------------
+
+Lavi
+
+Check the budget's current healthy count and allowed disruptions.
+
+Nori
+
+It shows one healthy replica and zero allowed disruptions.
+
+Pexa
+
+Investigate the unready replica before changing a budget that is protecting the last healthy one.
+
+Nori
+
+The unready replica cannot mount its configuration because the referenced ConfigMap name is wrong.
+
+Lavi
+
+Correct that reference through the workload review and wait for the replacement replica to become healthy.
+
+Nori
+
+Both replicas are now ready, and the budget allows one disruption.
+
+Pexa
+
+Resume the maintenance drain with the normal eviction workflow and monitor coordinator availability.
+
+Nori
+
+The pod moved to another node while the remaining replica continued handling requests.
+
+Lavi
+
+Confirm the replacement is ready before draining any further nodes.
+
+Nori
+
+The replacement is ready, and we added a pre-drain health check to the rehearsal procedure.

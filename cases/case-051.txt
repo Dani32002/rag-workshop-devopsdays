@@ -1,0 +1,47 @@
+Environment-based ConfigMap update does not affect running pods
+2026-03-16
+
+Our development banner still displays the old exercise label. The ConfigMap was updated successfully. The Deployment consumes that value as an environment variable. Existing pods have not been replaced. The application reads the variable at startup. I have not edited any pod directly. Could someone help confirm whether a rollout is required for this kind of configuration update?
+
+
+----------Responses------------------
+
+Talvi
+
+Check the Deployment's configuration reference and whether its pod template changed.
+
+Mero
+
+The reference is correct, but the template is unchanged.
+
+Iska
+
+Environment variables from a ConfigMap are captured when the container starts rather than updated in place.
+
+Mero
+
+That explains why inspecting the current ConfigMap disagrees with the running process.
+
+Talvi
+
+Use the normal reviewed development rollout to replace pods while retaining availability.
+
+Mero
+
+We triggered it through the release workflow and the new pods show the new label.
+
+Iska
+
+Verify all old replicas are gone before checking the Service response repeatedly.
+
+Mero
+
+Only new replicas remain and every response uses the expected exercise label.
+
+Talvi
+
+Consider the chart's existing configuration checksum pattern for future changes.
+
+Mero
+
+We applied that existing pattern so rendered configuration changes now trigger a pod-template rollout.

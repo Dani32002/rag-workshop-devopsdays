@@ -1,0 +1,47 @@
+Pipeline deploys to a stale Kubernetes context
+2026-03-24
+
+Our training pipeline reports a successful deployment but nothing changes in the intended cluster. The workload is a generated greeting service. We have separate lesson and rehearsal clusters. The runner was reused after an earlier exercise. Its deployment command does not explicitly select a context. I have stopped the pipeline before another release. Could someone help verify the target without exposing connection material?
+
+
+----------Responses------------------
+
+Riva
+
+Inspect only the runner's current context name and the intended target label.
+
+Deni
+
+The context name points to the lesson cluster rather than rehearsal.
+
+Senn
+
+Check whether the greeting release was actually applied in lesson before changing anything else.
+
+Deni
+
+It was applied there, and the lesson owner confirms it affects only this disposable exercise workload.
+
+Riva
+
+Have that owner restore the intended lesson release through the normal workflow.
+
+Deni
+
+They restored it, and we made target context selection explicit in the rehearsal job.
+
+Senn
+
+Add a preflight target check that fails before deployment when the selected cluster does not match.
+
+Deni
+
+The negative test fails safely, and the intended rehearsal deployment now changes the correct workload.
+
+Riva
+
+Verify the revision in both clusters rather than relying on the command exit code.
+
+Deni
+
+Rehearsal has the new revision and lesson has its restored revision.

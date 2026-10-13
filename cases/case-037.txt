@@ -1,0 +1,47 @@
+Local traffic policy leaves an ingress node without a backend
+2026-02-24
+
+Our rehearsal load balancer intermittently fails health checks on one node. The gateway Service uses externalTrafficPolicy set to Local. Gateway pods are ready on two other nodes. The failing node has no gateway pod. The policy was selected to preserve source addresses. I have not switched it to Cluster without discussing that requirement. Could someone help evaluate the backend placement?
+
+
+----------Responses------------------
+
+Mavi
+
+Check whether the load balancer understands the Service's local endpoint health-check behavior.
+
+Vex
+
+Its static backend list includes every worker, even nodes without a local gateway endpoint.
+
+Piri
+
+With Local, a node lacking a local endpoint should not receive that Service's client traffic.
+
+Vex
+
+Our custom rehearsal balancer uses a generic node check instead of the Service health-check port.
+
+Mavi
+
+Have the load-balancer owner configure the supported Service-specific health check.
+
+Vex
+
+They updated the reviewed rehearsal configuration and the empty node is now excluded.
+
+Piri
+
+Test routing while moving a gateway replica under the rehearsal procedure.
+
+Vex
+
+Backend eligibility follows local endpoint availability and requests continue through healthy nodes.
+
+Mavi
+
+Confirm the application still receives the expected source-address behavior.
+
+Vex
+
+It does, so we kept Local and fixed the balancer integration rather than changing traffic semantics.

@@ -1,0 +1,47 @@
+Multiline parser splits every stack trace into unrelated log entries
+2026-04-08
+
+Our laboratory error viewer shows one stack trace as many separate messages. The test application emits generated exceptions in a known format. Container log retrieval shows the trace intact across adjacent lines. A new collector parser expects JSON only. The application still emits plain-text traces. I have not changed production log parsing. Could someone help choose a consistent format for this exercise?
+
+
+----------Responses------------------
+
+Ovi
+
+Check whether the parser treats every newline as a complete event when JSON decoding fails.
+
+Reni
+
+It does, and continuation lines lack the fields used for grouping.
+
+Savi
+
+Can the application emit one structured event with the stack trace stored as a string?
+
+Reni
+
+Its logging library supports that without exposing any real data.
+
+Ovi
+
+Test structured output in one lab replica instead of adding a broad heuristic parser.
+
+Reni
+
+Each generated exception now becomes one JSON event with escaped internal newlines.
+
+Savi
+
+Verify the collector preserves the trace field and still extracts severity correctly.
+
+Reni
+
+The viewer shows one error event with the complete trace and correct severity.
+
+Ovi
+
+Check normal informational messages before standardizing that format.
+
+Reni
+
+They parse correctly too, and the exercise now uses a single documented logging format.

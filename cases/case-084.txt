@@ -1,0 +1,47 @@
+GPU request stays pending because the device plugin is unhealthy
+2026-05-06
+
+Our synthetic inference pod cannot obtain a GPU in the laboratory pool. It requests one accelerator through the vendor resource name. The GPU node is ready and selected correctly. The scheduler reports insufficient accelerator resources. No other inference pods are running there. I have not removed the resource request to force placement. Could someone help check whether the device is advertised to Kubernetes?
+
+
+----------Responses------------------
+
+Kavi
+
+Inspect node allocatable accelerator resources and the device plugin's status.
+
+Ossa
+
+Allocatable is zero and the plugin pod is restarting.
+
+Tiri
+
+What non-sensitive plugin error appears before restart?
+
+Ossa
+
+It reports an incompatible host driver version after the node image update.
+
+Kavi
+
+Have the accelerator owner compare the supported plugin and driver versions.
+
+Ossa
+
+They confirm the new node image falls outside the plugin's supported matrix.
+
+Tiri
+
+Keep the inference test queued while the owner restores a compatible laboratory node image.
+
+Ossa
+
+The compatible image is restored and the plugin advertises one accelerator.
+
+Kavi
+
+Run a bounded synthetic inference check before resuming the larger exercise.
+
+Ossa
+
+The check passes, and future image updates now require a device-plugin compatibility test.

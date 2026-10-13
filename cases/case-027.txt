@@ -1,0 +1,47 @@
+TLS certificate refresh stalls on the wrong issuer reference
+2026-02-10
+
+Our laboratory ingress is serving a certificate near expiration. The host is console.example.test and contains no real service data. The certificate controller is healthy. A replacement Certificate resource exists in the lab namespace. Its readiness condition is false. I have not printed certificate keys or changed the live Secret manually. Could someone help trace why the replacement has not been issued?
+
+
+----------Responses------------------
+
+Oli
+
+Inspect the Certificate events and issuer reference without sharing Secret contents.
+
+Zavi
+
+The event says its namespaced Issuer cannot be found.
+
+Pira
+
+Was the intended lab issuer created as an Issuer or a ClusterIssuer?
+
+Zavi
+
+It is a ClusterIssuer, but the chart set the reference kind to Issuer.
+
+Oli
+
+Verify that cluster issuer is the approved laboratory issuer before correcting the reference.
+
+Zavi
+
+The platform owner confirms it is approved for these fictional test hosts.
+
+Pira
+
+Change only the reference kind through review and watch the issuance conditions.
+
+Zavi
+
+The certificate becomes ready, and the controller updates the managed Secret.
+
+Oli
+
+Validate the served certificate's hostname and expiry without displaying its private key.
+
+Zavi
+
+Both checks pass, and the issuer kind is now covered by a chart rendering test.

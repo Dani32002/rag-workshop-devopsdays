@@ -1,0 +1,47 @@
+Development pool fails to grow after reaching its node cap
+2026-01-19
+
+Several load-test pods are pending in our development pool. Their events report insufficient memory. The cluster autoscaler is running and has no restart issues. We expected another node to appear automatically. The pool was recently given a cost-control ceiling. I have stopped increasing the test workload. Could someone help check whether the ceiling is preventing expansion?
+
+
+----------Responses------------------
+
+Mavi
+
+What does the autoscaler say for the pending pods and the affected node group?
+
+Lero
+
+It says the node group has reached its maximum size of three.
+
+Piri
+
+Are the pending pods otherwise compatible with that group's labels and taints?
+
+Lero
+
+Yes, the existing replicas run there and the pending pods use identical scheduling rules.
+
+Mavi
+
+This is a capacity policy limit rather than a scheduler defect.
+
+Lero
+
+The experiment needs one additional node for forty minutes, not a permanent increase.
+
+Piri
+
+Request a time-bounded ceiling adjustment from the pool owner with the estimated cost.
+
+Lero
+
+The owner approved it, and the autoscaler added a fourth node.
+
+Mavi
+
+Verify the pending pods schedule before continuing the test, then follow the approved capacity cleanup.
+
+Lero
+
+All test pods scheduled, and after completion the group returned to its original ceiling and size.

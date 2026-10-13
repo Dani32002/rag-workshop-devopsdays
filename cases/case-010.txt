@@ -1,0 +1,47 @@
+Autoscaler reaches its maximum during a rehearsal burst
+2026-01-16
+
+The rehearsal event processor is falling behind during a burst test. Its autoscaler reports healthy metrics. It has already increased to six replicas. The queue continues growing while all six workers stay busy. Our rehearsal plan expected twelve workers to be available. I have not raised the maximum because node capacity may be limited. Could someone help check whether configuration or capacity is the next constraint?
+
+
+----------Responses------------------
+
+Yaro
+
+Check the autoscaler scaling-limited condition and its configured maximum replica count.
+
+Navi
+
+The condition is true because the maximum is six replicas.
+
+Eris
+
+Before changing that cap, compare twelve workers' resource requests with quota and available node capacity.
+
+Navi
+
+The namespace quota permits twelve, but the current worker pool only has room for eight.
+
+Yaro
+
+Keep the load bounded and involve the platform owner in a rehearsal capacity change.
+
+Navi
+
+The owner approved extra rehearsal nodes within the existing pool budget.
+
+Eris
+
+Once those nodes are ready, raise the maximum through the reviewed test configuration.
+
+Navi
+
+The autoscaler reaches ten replicas and the queue starts shrinking at the same input rate.
+
+Yaro
+
+Record both the throughput result and the temporary capacity so the next rehearsal is reproducible.
+
+Navi
+
+We documented both and restored the agreed test cap after the queue drained.

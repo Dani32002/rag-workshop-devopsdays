@@ -1,0 +1,47 @@
+Dedicated build nodes reject pods without a toleration
+2026-01-20
+
+Our temporary compiler pods cannot use the new build-node pool. They remain pending in the forge namespace. The new nodes are ready and have free CPU. The pods select the build pool label. General application pods still schedule elsewhere. I have not removed any taints from the dedicated nodes. Could someone help identify the missing scheduling setting?
+
+
+----------Responses------------------
+
+Cavi
+
+What scheduler event appears, and what taint is present on the build nodes?
+
+Tera
+
+The event reports an untolerated dedicated=build taint with the NoSchedule effect.
+
+Voni
+
+A matching node selector narrows placement but does not tolerate a taint.
+
+Tera
+
+The pod template has the selector and no tolerations.
+
+Cavi
+
+Confirm the workload is approved for this pool before adding the specific toleration.
+
+Tera
+
+The build-pool owner confirms these temporary compiler pods are its intended workload.
+
+Voni
+
+Add only that key, value, and effect to the reviewed pod template.
+
+Tera
+
+The replacement compiler pods now schedule on the dedicated nodes.
+
+Cavi
+
+Check that their selector still prevents them from spilling onto general nodes.
+
+Tera
+
+The selector remains in place, and the compile test completes without changing node isolation.

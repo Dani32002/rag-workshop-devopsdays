@@ -1,0 +1,47 @@
+Support viewer can get pods but cannot read their logs
+2026-03-09
+
+My fictional training account can list pods but cannot read logs. This is a least-privilege RBAC exercise in the lesson namespace. The expected role is a read-only troubleshooting role. Getting pod details succeeds. Log retrieval returns Forbidden. I have not requested cluster-admin access. Could someone help identify the smallest permission missing from the exercise role?
+
+
+----------Responses------------------
+
+Heri
+
+Check authorization for get on the pods/log subresource using the approved training identity.
+
+Veni
+
+That check returns no, while get on pods returns yes.
+
+Laro
+
+The log subresource needs an explicit permission separate from the main pod resource.
+
+Veni
+
+The Role currently lists only pods with get, list, and watch.
+
+Heri
+
+Have the exercise owner add get on pods/log to the namespaced Role after reviewing log sensitivity.
+
+Veni
+
+The owner confirms these logs contain only generated training messages.
+
+Laro
+
+Apply the narrow Role update and retry without adding write or exec permissions.
+
+Veni
+
+Log access works, and authorization still denies pod deletion and execution.
+
+Heri
+
+Verify the role cannot read logs in another namespace.
+
+Veni
+
+Cross-namespace access remains denied, and the lesson now distinguishes resource and subresource permissions.

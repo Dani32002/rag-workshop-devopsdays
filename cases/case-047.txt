@@ -1,0 +1,47 @@
+RoleBinding targets a service account in the wrong namespace
+2026-03-10
+
+Our mock deployment helper cannot list ConfigMaps in its target namespace. The helper runs in the automation namespace. The target is a disposable exercise namespace named coral. A Role and RoleBinding exist in coral. The helper receives Forbidden responses. I have not broadened the Role to cluster scope. Could someone help inspect the binding subject?
+
+
+----------Responses------------------
+
+Sira
+
+Compare the RoleBinding subject's service account name and namespace with the helper pod.
+
+Mero
+
+The name matches, but the subject namespace is coral rather than automation.
+
+Havi
+
+Service accounts are namespaced identities, so those are different subjects.
+
+Mero
+
+The helper pod confirms it runs as the automation namespace's deploy-helper account.
+
+Sira
+
+Correct the subject namespace through review while keeping the RoleBinding in coral.
+
+Mero
+
+The reviewed binding now references the intended automation identity.
+
+Havi
+
+Check authorization for the allowed operation and a write operation that should remain denied.
+
+Mero
+
+Listing ConfigMaps is allowed, while updating them remains denied.
+
+Sira
+
+Also verify that the same helper has no unintended permissions in unrelated namespaces.
+
+Mero
+
+Those checks remain denied, and the binding template now requires an explicit subject namespace.

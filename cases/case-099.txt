@@ -1,0 +1,47 @@
+Leader election fails because the lease namespace is misconfigured
+2026-05-27
+
+Our rehearsal controller replicas never elect a leader. Both replicas are healthy enough to expose their health endpoints. They need a Lease for leader election. The service account has the intended Lease permissions in the controller namespace. The startup configuration points the election lock at a different namespace. I have not granted cluster-wide Lease access. Could someone help verify the intended lock location?
+
+
+----------Responses------------------
+
+Heri
+
+Check the leader-election error and compare the configured namespace with the approved Role scope.
+
+Veni
+
+It gets Forbidden in default, while the Role permits Lease operations only in rehearsal-control.
+
+Laro
+
+Is default intentional, or did the application fall back because the namespace setting was omitted?
+
+Veni
+
+The setting was omitted during chart refactoring, and default is the application's fallback.
+
+Heri
+
+Set the explicit controller namespace through the reviewed configuration rather than broadening permissions.
+
+Veni
+
+Both replicas now use the same Lease name in rehearsal-control.
+
+Laro
+
+Confirm exactly one leader and test controlled failover in the rehearsal environment.
+
+Veni
+
+One leader reconciles resources, and the other takes over after the tested lease-expiry interval.
+
+Heri
+
+Make missing election namespace configuration a startup validation error for this deployment.
+
+Veni
+
+The negative configuration test fails clearly, and normal election works within the original RBAC scope.

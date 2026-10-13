@@ -1,0 +1,47 @@
+Short-lived service account token is cached past expiration
+2026-03-11
+
+Our laboratory controller loses API access after running for about an hour. Restarting its pod temporarily restores access. It uses a projected service account token. RBAC checks show the intended read permissions. The application reads the token only during startup. I have not replaced it with a long-lived credential. Could someone help investigate token rotation handling without exposing the token?
+
+
+----------Responses------------------
+
+Riva
+
+Compare the authentication failures with token expiry metadata without posting the token itself.
+
+Deni
+
+The failures begin when the initially read token expires.
+
+Senn
+
+Projected tokens rotate on disk, but an application that caches the old value can keep using an expired token.
+
+Deni
+
+The mounted file changes before expiry, while our custom client keeps its startup value.
+
+Riva
+
+Use a supported Kubernetes client configuration that rereads the token file as needed.
+
+Deni
+
+The supported client library provides that behavior, and we replaced the custom authentication wrapper.
+
+Senn
+
+Run a laboratory soak test beyond at least one rotation interval.
+
+Deni
+
+The controller continues reading API resources through two rotations.
+
+Riva
+
+Confirm RBAC scope and token audience remain unchanged.
+
+Deni
+
+Both are unchanged, and no long-lived credential was introduced.

@@ -1,0 +1,47 @@
+Headless discovery omits peers until they become ready
+2026-02-16
+
+Our sandbox consensus demo cannot finish bootstrapping. It runs three StatefulSet replicas behind a headless Service. Each replica waits to discover every peer before reporting ready. DNS currently returns no peer addresses. The pods are running but remain unready. I have not weakened the client-facing readiness check. Could someone help untangle this discovery dependency?
+
+
+----------Responses------------------
+
+Vela
+
+Check whether the headless discovery Service publishes addresses for unready pods.
+
+Navi
+
+It does not, and the EndpointSlices mark every peer as unready.
+
+Ruun
+
+That creates a cycle if readiness requires discovery while discovery excludes unready peers.
+
+Navi
+
+The application documentation requires peer discovery during bootstrap before it can serve client traffic.
+
+Vela
+
+Consider publishNotReadyAddresses on a dedicated discovery Service, not on the client-facing Service.
+
+Navi
+
+We already have separate discovery and client Services, so the change can stay isolated.
+
+Ruun
+
+Review that discovery-only setting and ensure peers tolerate connections before initialization completes.
+
+Navi
+
+The peers retry safely, discover each other, and finish bootstrap.
+
+Vela
+
+Verify the client Service still routes only to ready replicas.
+
+Navi
+
+It does, and all three replicas now become ready without weakening client readiness.

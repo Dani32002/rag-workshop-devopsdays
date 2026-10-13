@@ -1,0 +1,47 @@
+ReadWriteOnce volume blocks a cross-node Deployment surge
+2026-02-27
+
+Our sandbox file editor rollout is stuck with a multi-attach error. It has one replica backed by a ReadWriteOnce claim. The old pod remains active on one node. A surged replacement was scheduled on another node. The volume holds only generated exercises but should still be preserved. I have not forced a detach or deleted the claim. Could someone help choose a rollout strategy that respects the storage?
+
+
+----------Responses------------------
+
+Nera
+
+Check the Deployment surge settings and confirm both pods reference the same claim.
+
+Lero
+
+They share the claim, and the rolling strategy permits one extra pod.
+
+Ossa
+
+ReadWriteOnce generally permits a mount from one node, so simultaneous cross-node use causes this conflict.
+
+Lero
+
+This editor does not support concurrent instances and can tolerate a short sandbox outage.
+
+Nera
+
+Use a reviewed Recreate strategy for this single-instance sandbox workload and plan the interruption.
+
+Lero
+
+The owner approved that change and confirmed no editing session is active.
+
+Ossa
+
+Watch the old pod terminate and the storage controller detach normally before the new mount.
+
+Lero
+
+The replacement mounts after the old instance stops, with no forced detach.
+
+Nera
+
+Verify the exercise files and document that this strategy does not provide uninterrupted service.
+
+Lero
+
+The files are intact, and the chart now explicitly documents its single-instance maintenance window.

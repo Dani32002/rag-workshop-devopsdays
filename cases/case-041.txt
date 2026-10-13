@@ -1,0 +1,47 @@
+Expanded claim still reports the old filesystem size
+2026-03-02
+
+Our test notebook claim was expanded from 10 GiB to 20 GiB. The PVC now shows the larger requested size. Inside the pod the filesystem still appears to be 10 GiB. The StorageClass allows expansion. The generated notebook fixtures remain readable. I have not run filesystem tools directly on the device. Could someone help determine whether the node-side expansion is waiting?
+
+
+----------Responses------------------
+
+Quin
+
+Check the claim conditions and the CSI driver's documented filesystem expansion behavior.
+
+Ivara
+
+The condition is FileSystemResizePending, and this driver requires a remount for this filesystem.
+
+Daro
+
+Confirm the volume's controller-side capacity has already increased before planning any pod restart.
+
+Ivara
+
+The PersistentVolume reports 20 GiB and the storage owner confirms backend expansion succeeded.
+
+Quin
+
+Arrange a notebook maintenance window, save work, and restart the pod through its controller.
+
+Ivara
+
+The owner saved the generated notebook and approved the restart.
+
+Daro
+
+Watch the mount and resize events rather than attempting an uncoordinated manual resize.
+
+Ivara
+
+The kubelet reports successful filesystem expansion and the pod is ready again.
+
+Quin
+
+Check the available size and read the existing fixtures.
+
+Ivara
+
+The filesystem now shows 20 GiB and the fixtures are intact.

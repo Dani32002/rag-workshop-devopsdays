@@ -1,0 +1,47 @@
+Canary response validation catches a serialization regression
+2026-05-04
+
+Our rehearsal canary passes readiness but fails a synthetic contract test. The previous version returns a numeric item count. The new version returns that field as a string. Only one canary replica receives the limited test traffic. The cluster has no pod or network errors. I have stopped promotion before increasing traffic. Could someone help decide whether this is a platform problem or a release defect?
+
+
+----------Responses------------------
+
+Talvi
+
+Compare the same synthetic input against the old and canary versions.
+
+Mero
+
+The old response has a number and the canary consistently has a quoted string.
+
+Iska
+
+Readiness only shows the process can serve, not that its response contract remains compatible.
+
+Mero
+
+The image changed its serialization library while the ingress and Service stayed unchanged.
+
+Talvi
+
+Keep promotion blocked and ask the application owner to review the serialization change.
+
+Mero
+
+The owner confirms an incompatible encoder option in the new build.
+
+Iska
+
+Use the approved canary rollback workflow rather than changing cluster routing to disguise the response.
+
+Mero
+
+Canary traffic is back on the previous verified build and contract checks pass.
+
+Talvi
+
+Make the contract check a release gate before the next candidate is promoted.
+
+Mero
+
+The gate is enabled, and the faulty build remains rejected until the application fix is tested.

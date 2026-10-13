@@ -1,0 +1,47 @@
+Job retries repeat a deterministic argument error
+2026-01-30
+
+Our nightly sandbox export Job keeps creating failed pods. It uses generated records in the reed namespace. Each attempt exits almost immediately. The Job eventually reports BackoffLimitExceeded. The export image was upgraded this week. I have not increased the retry limit because the failures look identical. Could someone help determine whether retries can ever fix this?
+
+
+----------Responses------------------
+
+Ona
+
+What non-sensitive error appears in the first failed attempt?
+
+Ravo
+
+The command reports that the old --format-name option is unknown.
+
+Tiri
+
+Compare the container arguments with the new image's command help in a sandbox.
+
+Ravo
+
+The new image uses --output-format, but our Job template still supplies the old option.
+
+Ona
+
+This is a deterministic invocation error, so increasing backoff would only repeat it.
+
+Ravo
+
+The export has not written output because argument validation fails before processing starts.
+
+Tiri
+
+Update the reviewed template and run a uniquely named test Job with the generated dataset.
+
+Ravo
+
+The test Job succeeds and produces the expected number of synthetic rows.
+
+Ona
+
+Apply the corrected template to future scheduled exports and retain failed-run evidence under the normal policy.
+
+Ravo
+
+The next scheduled run succeeds, and the build checks now validate command-line compatibility.

@@ -1,0 +1,47 @@
+Optional admission webhook blocks releases while unavailable
+2026-03-13
+
+Our sandbox release cannot create pods because an admission webhook times out. The webhook adds optional training labels. Its Service has no ready endpoints after a controller update. Existing workloads continue running. The webhook uses a failure policy of Fail. I have not changed that policy or bypassed admission. Could someone help recover the webhook and assess its intended availability behavior?
+
+
+----------Responses------------------
+
+Ovi
+
+Check the webhook controller's readiness failure before considering any policy change.
+
+Zera
+
+Its readiness probe uses the wrong port after the controller update.
+
+Fenn
+
+Restore the reviewed probe configuration so the webhook Service has healthy endpoints.
+
+Zera
+
+The probe is corrected and the Service now has two ready endpoints.
+
+Ovi
+
+Retry a server-side dry run of the blocked sandbox pod.
+
+Zera
+
+Admission succeeds and the optional training label is present.
+
+Fenn
+
+Keep failure policy decisions separate from this recovery because they affect admission guarantees.
+
+Zera
+
+The platform owner will review whether optional labeling should block future releases.
+
+Ovi
+
+For now, confirm the normal pod creation works with the existing policy.
+
+Zera
+
+The release succeeds, and we added a webhook endpoint check to controller upgrades.

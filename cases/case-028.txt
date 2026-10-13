@@ -1,0 +1,47 @@
+Cluster DNS queries blocked by a new egress policy
+2026-02-11
+
+Pods in the orchid namespace can no longer resolve Service names. Connections to an already known pod address still work. The problem started after we introduced default-deny egress. DNS works from the untouched development namespace. The affected application has no custom resolver settings. I have not removed the isolation policy. Could someone help add only the access required for DNS?
+
+
+----------Responses------------------
+
+Heri
+
+Check the existing egress rules and the cluster's approved DNS destination labels.
+
+Veni
+
+There are application destination rules but none for the DNS pods.
+
+Laro
+
+Test a DNS query from an approved diagnostic pod subject to the same policy.
+
+Veni
+
+The query times out, while the equivalent test outside this namespace succeeds.
+
+Heri
+
+Add reviewed DNS egress using the verified namespace and pod selectors with both UDP and TCP port 53.
+
+Veni
+
+The selectors match only our cluster DNS deployment.
+
+Laro
+
+Apply the narrow rule and test Service names plus a large response that may require TCP.
+
+Veni
+
+Both tests resolve successfully under the updated policy.
+
+Heri
+
+Confirm unrelated external destinations remain denied.
+
+Veni
+
+They remain denied, and we added DNS reachability to the namespace isolation test.
