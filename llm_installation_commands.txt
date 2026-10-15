@@ -1,0 +1,11 @@
+ollama pull qwen2.5:3b
+
+cat > Modelfile <<'EOF'
+FROM qwen2.5:3b
+PARAMETER num_thread 4
+PARAMETER num_ctx 4096
+EOF
+
+ollama create workshop-local -f ./Modelfile
+
+ollama run workshop-local
